@@ -155,6 +155,14 @@
                 <input v-model.number="formData.count_oilspill" type="number" min="0" placeholder="Anzahl" />
               </div>
             </div>
+
+            <div v-if="selectedCompany.billing_type === 'flat_rate' && selectedCompany.monthly_rate" class="billing-section flat-rate">
+              <div class="billing-icon">📅</div>
+              <div>
+                <h3>Rufbereitschaftsdienst Monatspauschale</h3>
+                <p>Monatlicher Pauschalbetrag: <strong>{{ (selectedCompany.monthly_rate || 0).toFixed(2) }} €</strong></p>
+              </div>
+            </div>
           </div>
 
           <div v-if="selectedCompany && calculatedSubtotal > 0" class="form-section">
@@ -212,6 +220,7 @@ interface Company {
   price_lkw?: number
   price_oilspill?: number
   service_fee?: number
+  monthly_rate?: number
 }
 
 const companies = ref<Company[]>([])
@@ -246,6 +255,8 @@ const calculatedSubtotal = computed(() => {
       (formData.value.count_lkw || 0) * (selectedCompany.value.price_lkw || 0) +
       (formData.value.count_oilspill || 0) * (selectedCompany.value.price_oilspill || 0)
     )
+  } else if (selectedCompany.value.billing_type === 'flat_rate') {
+    return selectedCompany.value.monthly_rate || 0
   }
   return 0
 })
@@ -337,6 +348,10 @@ async function createInvoice() {
         price_pkw: selectedCompany.value.price_pkw,
         price_lkw: selectedCompany.value.price_lkw,
         price_oilspill: selectedCompany.value.price_oilspill
+      })
+    } else if (selectedCompany.value.billing_type === 'flat_rate') {
+      Object.assign(payload, {
+        monthly_rate: selectedCompany.value.monthly_rate
       })
     }
     
@@ -624,6 +639,11 @@ onMounted(() => {
 .billing-section.per-job {
   background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
   border: 2px solid #6ee7b7;
+}
+
+.billing-section.flat-rate {
+  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+  border: 2px solid #a5b4fc;
 }
 
 .billing-icon {
