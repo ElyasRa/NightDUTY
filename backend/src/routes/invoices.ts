@@ -159,7 +159,17 @@ router.get('/', authenticateToken, async (req, res) => {
     const { status, company_id } = req.query
     
     const where: any = {}
-    if (status) where.status = status
+    
+    // Handle status filtering - support 'all', single status, or multiple statuses
+    if (status && status !== 'all') {
+      if (status === 'open') {
+        // Include both 'open' and 'partial' for open invoices
+        where.status = { in: ['open', 'partial'] }
+      } else {
+        where.status = status
+      }
+    }
+    
     if (company_id) where.company_id = parseInt(company_id as string)
     
     const invoices = await prisma.invoice.findMany({
@@ -388,6 +398,88 @@ router.delete('/:id', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Error deleting invoice:', error)
     res.status(500).json({ error: 'Fehler beim Löschen der Rechnung' })
+  }
+})
+
+// POST /:id/payments - Record a new payment for an invoice
+router.post('/:id/payments', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params
+    const { amount, payment_date, payment_method, notes } = req.body
+    const username = (req as any).user?.username || 'system'
+    
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: 'Betrag muss größer als 0 sein' })
+    }
+    
+    // Get the invoice to check current status and total amount
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: parseInt(id) },
+      include: {
+        payments: true
+      }
+    })
+    
+    if (!invoice) {
+      return res.status(404).json({ error: 'Rechnung nicht gefunden' })
+    }
+    
+    // Calculate total paid including this new payment
+    const currentTotalPaid = invoice.payments.reduce((sum, p) => sum + p.amount, 0)
+    const newTotalPaid = currentTotalPaid + amount
+    
+    // Validate payment doesn't exceed total amount
+    if (newTotalPaid > invoice.total_amount) {
+      return res.status(400).json({ 
+        error: 'Zahlungsbetrag überschreitet den offenen Rechnungsbetrag',
+        open_amount: invoice.total_amount - currentTotalPaid
+      })
+    }
+    
+    // Create the payment record
+    const payment = await prisma.payment.create({
+      data: {
+        invoice_id: parseInt(id),
+        amount,
+        payment_date: payment_date ? new Date(payment_date) : new Date(),
+        payment_method: payment_method || null,
+        notes: notes || null,
+        created_by: username
+      }
+    })
+    
+    // Determine new status based on total paid
+    let newStatus = invoice.status
+    if (newTotalPaid >= invoice.total_amount) {
+      newStatus = 'paid'
+    } else if (newTotalPaid > 0) {
+      newStatus = 'partial'
+    }
+    
+    // Update invoice status
+    const updatedInvoice = await prisma.invoice.update({
+      where: { id: parseInt(id) },
+      data: {
+        status: newStatus,
+        paid_date: newStatus === 'paid' ? new Date() : null
+      },
+      include: {
+        company: true,
+        payments: true
+      }
+    })
+    
+    console.log(`✅ Zahlung gebucht: ${amount}€ für Rechnung ${invoice.invoice_number}. Status: ${newStatus}`)
+    
+    res.json({
+      payment,
+      invoice: updatedInvoice,
+      total_paid: newTotalPaid
+    })
+    
+  } catch (error) {
+    console.error('❌ Error recording payment:', error)
+    res.status(500).json({ error: 'Fehler beim Buchen der Zahlung' })
   }
 })
 
