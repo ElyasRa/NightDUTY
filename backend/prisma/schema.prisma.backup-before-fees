@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  password   String
+  email      String?
+  role       String   @default("user")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Company {
+  id              Int         @id @default(autoincrement())
+  name            String      @unique
+  customer_number String?     @unique
+  contact_person  String?
+  email           String?
+  phone           String?
+  address         String?
+  city            String?
+  postal_code     String?
+  country         String?
+  federal_state   String?
+  notes           String?
+  is_active       Boolean     @default(true)
+  
+  monday_start    String?
+  monday_end      String?
+  tuesday_start   String?
+  tuesday_end     String?
+  wednesday_start String?
+  wednesday_end   String?
+  thursday_start  String?
+  thursday_end    String?
+  friday_start    String?
+  friday_end      String?
+  saturday_start  String?
+  saturday_end    String?
+  sunday_start    String?
+  sunday_end      String?
+  
+  billing_type    String?
+  hourly_rate     Float?
+  price_pkw       Float?
+  price_lkw       Float?
+  price_oilspill  Float?
+  
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt
+  
+  takeovers       EarlyTakeover[]
+  invoices        Invoice[]
+}
+
+model EarlyTakeover {
+  id          Int      @id @default(autoincrement())
+  company_id  Int
+  company     Company  @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  
+  start_date  DateTime
+  end_date    DateTime
+  start_time  String
+  end_time    String
+  notes       String?
+  
+  created_by  String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  
+  @@index([company_id])
+  @@index([start_date, end_date])
+}
+
+model Invoice {
+  id              Int       @id @default(autoincrement())
+  invoice_number  String    @unique
+  company_id      Int
+  company         Company   @relation(fields: [company_id], references: [id])
+  
+  invoice_date    DateTime
+  due_date        DateTime
+  period_start    DateTime
+  period_end      DateTime
+  
+  billing_type    String
+  
+  total_hours     Float?
+  hourly_rate     Float?
+  
+  count_pkw       Int?
+  count_lkw       Int?
+  count_oilspill  Int?
+  price_pkw       Float?
+  price_lkw       Float?
+  price_oilspill  Float?
+  
+  subtotal        Float
+  tax_rate        Float     @default(19)
+  tax_amount      Float
+  total_amount    Float
+  
+  status          String    @default("open")
+  paid_date       DateTime?
+  
+  notes           String?
+  created_by      String?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+  
+  payments        Payment[]
+  
+  @@index([company_id])
+  @@index([invoice_date])
+  @@index([status])
+}
+
+model Payment {
+  id          Int      @id @default(autoincrement())
+  invoice_id  Int
+  invoice     Invoice  @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+  
+  amount      Float
+  payment_date DateTime
+  payment_method String?
+  notes       String?
+  
+  created_by  String?
+  created_at  DateTime @default(now())
+  
+  @@index([invoice_id])
+}

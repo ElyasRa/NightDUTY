@@ -1,0 +1,327 @@
+import PDFDocument from 'pdfkit'
+import { Response } from 'express'
+import * as path from 'path'
+import * as fs from 'fs'
+
+interface InvoiceData {
+  invoice_number: string
+  invoice_date: string
+  due_date: string
+  period_start: string
+  period_end: string
+  
+  company: {
+    name: string
+    customer_number?: string
+    contact_person?: string
+    address?: string
+    postal_code?: string
+    city?: string
+    email?: string
+    phone?: string
+  }
+  
+  billing_type: string
+  total_hours?: number
+  hourly_rate?: number
+  count_pkw?: number
+  count_lkw?: number
+  count_oilspill?: number
+  price_pkw?: number
+  price_lkw?: number
+  price_oilspill?: number
+  
+  subtotal: number
+  tax_rate: number
+  tax_amount: number
+  total_amount: number
+  notes?: string
+}
+
+export function generateInvoicePDF(data: InvoiceData, res: Response) {
+  const doc = new PDFDocument({ 
+    margin: 0,
+    size: 'A4'
+  })
+  
+  const filename = `Rechnung_${data.invoice_number}.pdf`
+  res.setHeader('Content-Type', 'application/pdf')
+  res.setHeader('Content-Disposition', `attachment; filename=${filename}`)
+  
+  doc.pipe(res)
+  
+  const pageWidth = 595.28
+  const pageHeight = 841.89
+  const margin = 50
+  
+  // ==================== GRAUER BALKEN GANZ OBEN ====================
+  doc.rect(0, 0, pageWidth, 8).fill('#6b7280')
+  
+  // ==================== BLAUER BALKEN ====================
+  doc.rect(0, 8, pageWidth, 28).fill('#1e3a8a')
+  
+  let y = 65
+  
+  // ==================== NIGHTDUTY LOGO (RECHTS OBEN) ====================
+  const logoPath = path.join(__dirname, '../../public/images/logo.png')
+  
+  if (fs.existsSync(logoPath)) {
+    try {
+      doc.image(logoPath, 330, y, { width: 220 })
+      y += 100
+    } catch (err) {
+      console.error('Logo konnte nicht geladen werden:', err)
+      y += 100
+    }
+  } else {
+    y += 100
+  }
+  
+  // ==================== FIRMENADRESSE UNTER LOGO ====================
+  doc.fontSize(8).fillColor('#1e3a8a').font('Helvetica')
+  doc.text('NIGHTDUTY GmbH - Westendohrf11 - 45143 Essen', margin, y)
+  
+  y += 30
+  
+  // ==================== ZWEI SPALTEN: EMPFÄNGER & FIRMEN-INFOS ====================
+  const leftX = margin
+  const rightX = 340
+  
+  // EMPFÄNGER LINKS
+  let leftY = y
+  
+  doc.fontSize(10).fillColor('#1e3a8a').font('Helvetica-Bold')
+  doc.text(data.company.name, leftX, leftY)
+  leftY += 13
+  
+  doc.fontSize(9).fillColor('#000000').font('Helvetica')
+  if (data.company.address) {
+    doc.text(data.company.address, leftX, leftY)
+    leftY += 12
+  }
+  
+  if (data.company.postal_code && data.company.city) {
+    doc.text(`${data.company.postal_code} ${data.company.city}`, leftX, leftY)
+  }
+  
+  // FIRMEN-INFOS RECHTS
+  let rightY = y
+  
+  doc.fontSize(9).fillColor('#000000').font('Helvetica')
+  
+  const infos = [
+    ['UST-ID:', 'DE312802879'],
+    ['Steuernummer:', '111/5763/0795'],
+    ['Telefon:', '0201/8578670'],
+    ['E-Mail:', 'buchhaltung@nightduty.de']
+  ]
+  
+  infos.forEach(([label, value]) => {
+    doc.text(label, rightX, rightY)
+    doc.text(value, rightX + 115, rightY)
+    rightY += 11
+  })
+  
+  rightY += 15
+  
+  const details = [
+    ['Datum', formatDate(data.invoice_date)],
+    ['Ihre Kundennummer:', data.company.customer_number || '10001'],
+    ['INVOICE/Rechnung', data.invoice_number]
+  ]
+  
+  details.forEach(([label, value]) => {
+    doc.text(label, rightX, rightY)
+    doc.text(value, rightX + 115, rightY)
+    rightY += 11
+  })
+  
+  y = Math.max(leftY, rightY) + 30
+  
+  // ==================== EINLEITUNGSTEXT ====================
+  doc.fontSize(9).fillColor('#000000').font('Helvetica')
+  doc.text('Aufgrund unserer AGB und des bestehenden Dienstleistungsvertrages erlauben wir uns zu berechnen:', 
+    margin, y, { width: 495 })
+  
+  y += 28
+  
+  // ==================== RECHNUNGSTITEL ====================
+  doc.fontSize(13).fillColor('#1e3a8a').font('Helvetica-Bold')
+  doc.text(`INVOICE/Rechnung ${data.invoice_number}`, margin, y)
+  
+  y += 28
+  
+  // ==================== TABELLE ====================
+  const tableLeft = margin
+  const tableWidth = 495
+  
+  doc.rect(tableLeft, y, tableWidth, 22).fill('#f3f4f6')
+  doc.strokeColor('#000000').lineWidth(1)
+  doc.rect(tableLeft, y, tableWidth, 22).stroke()
+  
+  doc.fontSize(9).fillColor('#000000').font('Helvetica-Bold')
+  doc.text('Art-Nr.', tableLeft + 8, y + 7, { width: 55 })
+  doc.text('Bezeichnung', tableLeft + 75, y + 7, { width: 200 })
+  doc.text('Menge', tableLeft + 285, y + 7, { width: 50, align: 'center' })
+  doc.text('Einzelpreis', tableLeft + 345, y + 7, { width: 70, align: 'right' })
+  doc.text('Betrag', tableLeft + 425, y + 7, { width: 62, align: 'right' })
+  
+  y += 22
+  
+  let artNr = 10000
+  const rowHeight = 22
+  
+  doc.fontSize(9).font('Helvetica')
+  
+  const addRow = (art: number, bez: string, menge: string, preis: string, betrag: string) => {
+    doc.strokeColor('#000000').lineWidth(1)
+    doc.moveTo(tableLeft, y).lineTo(tableLeft, y + rowHeight).stroke()
+    doc.moveTo(tableLeft + tableWidth, y).lineTo(tableLeft + tableWidth, y + rowHeight).stroke()
+    doc.moveTo(tableLeft, y + rowHeight).lineTo(tableLeft + tableWidth, y + rowHeight).stroke()
+    
+    doc.strokeColor('#d1d5db').lineWidth(0.5)
+    doc.moveTo(tableLeft + 70, y).lineTo(tableLeft + 70, y + rowHeight).stroke()
+    doc.moveTo(tableLeft + 280, y).lineTo(tableLeft + 280, y + rowHeight).stroke()
+    doc.moveTo(tableLeft + 340, y).lineTo(tableLeft + 340, y + rowHeight).stroke()
+    doc.moveTo(tableLeft + 420, y).lineTo(tableLeft + 420, y + rowHeight).stroke()
+    
+    doc.fillColor('#000000')
+    doc.text(art.toString(), tableLeft + 8, y + 7, { width: 55 })
+    doc.text(bez, tableLeft + 75, y + 7, { width: 200 })
+    doc.text(menge, tableLeft + 285, y + 7, { width: 50, align: 'center' })
+    doc.text(preis, tableLeft + 345, y + 7, { width: 70, align: 'right' })
+    doc.text(betrag, tableLeft + 425, y + 7, { width: 62, align: 'right' })
+    
+    y += rowHeight
+  }
+  
+  if (data.billing_type === 'hourly') {
+    addRow(
+      artNr,
+      'Bereitschaftsdienst',
+      (data.total_hours || 0).toFixed(0),
+      `${(data.hourly_rate || 0).toFixed(2)} €`,
+      `${((data.total_hours || 0) * (data.hourly_rate || 0)).toFixed(2)} €`
+    )
+  } else if (data.billing_type === 'per_job') {
+    if (data.count_pkw && data.count_pkw > 0) {
+      addRow(artNr, 'PKW-Bergung', data.count_pkw.toString(), `${data.price_pkw?.toFixed(2)} €`, `${(data.count_pkw * data.price_pkw!).toFixed(2)} €`)
+      artNr += 10000
+    }
+    if (data.count_lkw && data.count_lkw > 0) {
+      addRow(artNr, 'LKW-Bergung', data.count_lkw.toString(), `${data.price_lkw?.toFixed(2)} €`, `${(data.count_lkw * data.price_lkw!).toFixed(2)} €`)
+      artNr += 10000
+    }
+    if (data.count_oilspill && data.count_oilspill > 0) {
+      addRow(artNr, 'Ölspur-Beseitigung', data.count_oilspill.toString(), `${data.price_oilspill?.toFixed(2)} €`, `${(data.count_oilspill * data.price_oilspill!).toFixed(2)} €`)
+      artNr += 10000
+    }
+    
+    // Service-Pauschale hinzufügen (falls vorhanden)
+    if (data.service_fee && data.service_fee > 0) {
+      addRow(artNr, 'Service-Pauschale', '1', `${data.service_fee.toFixed(2)} €`, `${data.service_fee.toFixed(2)} €`)
+    }
+  }
+  
+  doc.rect(tableLeft, y, tableWidth, 22).fill('#ffffff')
+  doc.strokeColor('#000000').lineWidth(1)
+  doc.rect(tableLeft, y, tableWidth, 22).stroke()
+  
+  doc.fontSize(10).fillColor('#000000').font('Helvetica-Bold')
+  doc.text('Rechnungsbetrag', tableLeft + 285, y + 7, { width: 130, align: 'left' })
+  doc.text(`${data.total_amount.toFixed(2)} €`, tableLeft + 425, y + 7, { width: 62, align: 'right' })
+  
+  y += 35
+  
+  // ==================== ZAHLUNGSTEXT ====================
+  doc.fontSize(9).fillColor('#000000').font('Helvetica')
+  const dueDate = formatDate(data.due_date)
+  doc.text(
+    `Wir bedanken uns für die partnerschaftliche Zusammenarbeit und bitten um Begleichung des Rechnungsbetrages bis zum ${dueDate} auf die unten angegebene Kontonummer.`,
+    margin,
+    y,
+    { width: 495 }
+  )
+  
+  // ==================== PERFEKTE PROFESSIONELLE FUSSZEILE ====================
+  const footerY = 735
+  
+  // Elegante doppelte Linie oben
+  doc.strokeColor('#cbd5e1').lineWidth(0.5)
+  doc.moveTo(margin, footerY - 3).lineTo(pageWidth - margin, footerY - 3).stroke()
+  
+  doc.strokeColor('#1e3a8a').lineWidth(1.5)
+  doc.moveTo(margin, footerY).lineTo(pageWidth - margin, footerY).stroke()
+  
+  // Vertikale Trennlinien (neue Positionen)
+  doc.strokeColor('#cbd5e1').lineWidth(0.5)
+  doc.moveTo(250, footerY + 8).lineTo(250, footerY + 65).stroke()
+  doc.moveTo(400, footerY + 8).lineTo(400, footerY + 65).stroke()
+  
+  // ========== SPALTE 1: BANKVERBINDUNG (KOMPAKT, weniger Weißraum) ==========
+  doc.fontSize(7).fillColor('#64748b').font('Helvetica-Bold')
+  doc.text('BANKVERBINDUNG', margin, footerY + 10)
+  
+  doc.fontSize(6).fillColor('#1e3a8a').font('Helvetica')
+  doc.text('IBAN', margin, footerY + 23)
+  doc.fillColor('#000000').fontSize(6)
+  doc.text('DE 72 1001 9000 1000 0097 62', margin, footerY + 33)
+  
+  doc.fontSize(6).fillColor('#1e3a8a').font('Helvetica')
+  doc.text('BIC', margin, footerY + 47)
+  doc.fillColor('#000000').fontSize(6)
+  doc.text('ADYBDEB2', margin, footerY + 57)
+  
+  // ========== SPALTE 2: UNTERNEHMENSDETAILS ==========
+  doc.fontSize(7).fillColor('#64748b').font('Helvetica-Bold')
+  doc.text('UNTERNEHMENSDETAILS', 260, footerY + 10)
+  
+  doc.fontSize(6).fillColor('#000000').font('Helvetica')
+  doc.text('Registergericht Essen  |  HRB 28180', 260, footerY + 25)
+  doc.text('Geschäftsführer', 260, footerY + 38)
+  doc.text('Roland Müller-Roth  |  Karsten Roth', 260, footerY + 48)
+  
+  // ========== KLEINES DEZENTES LOGO NEBEN KONTAKT ==========
+  if (fs.existsSync(logoPath)) {
+    try {
+      doc.image(logoPath, 410, footerY + 8, { width: 45, height: 25, fit: [45, 25] })
+    } catch (err) {
+      console.error('Logo-Fehler in Footer')
+    }
+  }
+  
+  // ========== SPALTE 3: KONTAKT ==========
+  const col3X = 465
+  const col3Width = pageWidth - margin - col3X
+  
+  doc.fontSize(7).fillColor('#64748b').font('Helvetica-Bold')
+  doc.text('KONTAKT', col3X, footerY + 10, { width: col3Width, align: 'left' })
+  
+  doc.fontSize(7).fillColor('#1e3a8a').font('Helvetica-Bold')
+  doc.text('NIGHTDUTY GmbH', col3X, footerY + 25, { width: col3Width, align: 'left' })
+  
+  doc.fontSize(6).fillColor('#000000').font('Helvetica')
+  doc.text('Westend 11', col3X, footerY + 38, { width: col3Width, align: 'left' })
+  doc.text('D-45143 Essen', col3X, footerY + 48, { width: col3Width, align: 'left' })
+  doc.text('Karsten Roth', col3X, footerY + 58, { width: col3Width, align: 'left' })
+  
+  // ==================== PREMIUM BLAUER BALKEN UNTEN ====================
+  doc.rect(0, pageHeight - 15, pageWidth, 15).fill('#1e3a8a')
+  
+  // Kleiner eleganter Text im blauen Balken
+  doc.fontSize(6).fillColor('#ffffff').font('Helvetica')
+  doc.text('NIGHTDUTY GmbH  •  www.nightduty.de  •  info@nightduty.de', 0, pageHeight - 10, {
+    width: pageWidth,
+    align: 'center'
+  })
+  
+  doc.end()
+}
+
+function formatDate(dateStr: string): string {
+  const date = new Date(dateStr)
+  const day = date.getDate().toString().padStart(2, '0')
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const year = date.getFullYear()
+  return `${day}.${month}.${year}`
+}
