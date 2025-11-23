@@ -7,6 +7,18 @@ import { getHolidaysForState } from '../utils/postalCodeHelper'
 const router = Router()
 const prisma = new PrismaClient()
 
+const MINUTES_PER_DAY = 24 * 60
+
+// Helper function to safely access company schedule fields
+function getCompanySchedule(company: any, day: string): { start: string | null, end: string | null } {
+  const startField = `${day}_start`
+  const endField = `${day}_end`
+  return {
+    start: company[startField] || null,
+    end: company[endField] || null
+  }
+}
+
 // Stundenreport für individuellen Zeitraum generieren
 router.post('/stundenreport', authenticateToken, async (req, res) => {
   try {
@@ -94,9 +106,18 @@ router.post('/stundenreport', authenticateToken, async (req, res) => {
         isTakeover = true
         takeoverNotes = takeover.notes || 'Frühzeitige Übernahme'
       } else if (isHoliday) {
-        // Feiertag = Sonntag-Zeiten
-        startTime = company.sunday_start
-        endTime = company.sunday_end
+        // Holiday logic: check holiday_takeover setting
+        if (company.holiday_takeover === false) {
+          // Skip this day - no hours
+          startTime = null
+          endTime = null
+        } else {
+          // Use schedule from holiday_schedule_ref
+          const refDay = company.holiday_schedule_ref || 'sunday'
+          const schedule = getCompanySchedule(company, refDay)
+          startTime = schedule.start
+          endTime = schedule.end
+        }
       } else {
         // Normale Wochentag-Zeiten
         switch (dayOfWeek) {
@@ -118,12 +139,18 @@ router.post('/stundenreport', authenticateToken, async (req, res) => {
         let startMinutes = startH * 60 + startM
         let endMinutes = endH * 60 + endM
         
-        // Über-Mitternacht-Fix
-        if (endMinutes < startMinutes) {
-          endMinutes += 24 * 60
+        // 24h shift logic: if start and end times are equal, it's a full 24-hour shift
+        let workMinutes
+        if (startTime === endTime) {
+          workMinutes = MINUTES_PER_DAY  // 1440 minutes = 24 hours
+        } else if (endMinutes < startMinutes) {
+          // Overnight shift (e.g., 22:00 to 06:00)
+          endMinutes += MINUTES_PER_DAY
+          workMinutes = endMinutes - startMinutes
+        } else {
+          workMinutes = endMinutes - startMinutes
         }
         
-        const workMinutes = endMinutes - startMinutes
         const hours = workMinutes / 60
         
         const day = currentDate.getDate()

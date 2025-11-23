@@ -47,6 +47,9 @@ model Company {
   sunday_start    String?
   sunday_end      String?
   
+  holiday_takeover     Boolean  @default(true)
+  holiday_schedule_ref String   @default("sunday")
+  
   billing_type    String?
   hourly_rate     Float?
   price_pkw       Float?
