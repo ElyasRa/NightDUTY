@@ -38,7 +38,7 @@ export function generateStundenreportPDF(data: ReportData, res: Response) {
   
   doc.pipe(res)
   
-  let yPos = 30
+  let yPos = 20
   
   // ==================== LOGO ====================
   
@@ -46,7 +46,7 @@ export function generateStundenreportPDF(data: ReportData, res: Response) {
   if (fs.existsSync(logoPath)) {
     try {
       doc.image(logoPath, 200, yPos, { width: 200 })
-      yPos += 70
+      yPos += 100
     } catch (err) {
       doc.fontSize(42).font('Helvetica-Bold')
       const colors = ['#e74c3c', '#e67e22', '#f39c12', '#27ae60', '#3498db', '#8e44ad', '#e91e63']
@@ -57,7 +57,7 @@ export function generateStundenreportPDF(data: ReportData, res: Response) {
         doc.fillColor(colors[idx]).text(letter, xPos, yPos, { continued: idx < letters.length - 1 })
         xPos += letter === 'I' ? 15 : 30
       })
-      yPos += 55
+      yPos += 80
     }
   } else {
     doc.fontSize(42).font('Helvetica-Bold')
@@ -69,7 +69,7 @@ export function generateStundenreportPDF(data: ReportData, res: Response) {
       doc.fillColor(colors[idx]).text(letter, xPos, yPos, { continued: idx < letters.length - 1 })
       xPos += letter === 'I' ? 15 : 30
     })
-    yPos += 55
+    yPos += 80
   }
   
   // Firmenname
@@ -237,7 +237,7 @@ export function generateStundenreportPDFBuffer(data: ReportData): Promise<Buffer
     doc.on('end', () => resolve(Buffer.concat(chunks)))
     doc.on('error', reject)
     
-    let yPos = 30
+    let yPos = 20
     
     // ==================== LOGO ====================
     
@@ -245,7 +245,7 @@ export function generateStundenreportPDFBuffer(data: ReportData): Promise<Buffer
     if (fs.existsSync(logoPath)) {
       try {
         doc.image(logoPath, 200, yPos, { width: 200 })
-        yPos += 70
+        yPos += 100
       } catch (err) {
         doc.fontSize(42).font('Helvetica-Bold')
         const colors = ['#e74c3c', '#e67e22', '#f39c12', '#27ae60', '#3498db', '#8e44ad', '#e91e63']
@@ -256,7 +256,7 @@ export function generateStundenreportPDFBuffer(data: ReportData): Promise<Buffer
           doc.fillColor(colors[idx]).text(letter, xPos, yPos, { continued: idx < letters.length - 1 })
           xPos += letter === 'I' ? 15 : 30
         })
-        yPos += 55
+        yPos += 80
       }
     } else {
       doc.fontSize(42).font('Helvetica-Bold')
@@ -268,7 +268,7 @@ export function generateStundenreportPDFBuffer(data: ReportData): Promise<Buffer
         doc.fillColor(colors[idx]).text(letter, xPos, yPos, { continued: idx < letters.length - 1 })
         xPos += letter === 'I' ? 15 : 30
       })
-      yPos += 55
+      yPos += 80
     }
     
     // Firmenname
