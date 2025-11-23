@@ -180,8 +180,8 @@ function selectThisWeek() {
   const sunday = new Date(monday)
   sunday.setDate(monday.getDate() + 6)
 
-  startDate.value = monday.toISOString().split('T')[0]
-  endDate.value = sunday.toISOString().split('T')[0]
+  startDate.value = monday.toISOString().split('T')[0] ?? ''
+  endDate.value = sunday.toISOString().split('T')[0] ?? ''
   validateDates()
 }
 
@@ -190,8 +190,8 @@ function selectThisMonth() {
   const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
   const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
-  startDate.value = firstDay.toISOString().split('T')[0]
-  endDate.value = lastDay.toISOString().split('T')[0]
+  startDate.value = firstDay.toISOString().split('T')[0] ?? ''
+  endDate.value = lastDay.toISOString().split('T')[0] ?? ''
   validateDates()
 }
 
@@ -200,8 +200,8 @@ function selectLastMonth() {
   const firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1)
   const lastDay = new Date(now.getFullYear(), now.getMonth(), 0)
 
-  startDate.value = firstDay.toISOString().split('T')[0]
-  endDate.value = lastDay.toISOString().split('T')[0]
+  startDate.value = firstDay.toISOString().split('T')[0] ?? ''
+  endDate.value = lastDay.toISOString().split('T')[0] ?? ''
   validateDates()
 }
 
@@ -210,8 +210,8 @@ function selectLast30Days() {
   const start = new Date()
   start.setDate(end.getDate() - 29)
 
-  startDate.value = start.toISOString().split('T')[0]
-  endDate.value = end.toISOString().split('T')[0]
+  startDate.value = start.toISOString().split('T')[0] ?? ''
+  endDate.value = end.toISOString().split('T')[0] ?? ''
   validateDates()
 }
 
