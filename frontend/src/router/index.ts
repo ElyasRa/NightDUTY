@@ -6,6 +6,9 @@ import StundenreportView from '../views/StundenreportView.vue'
 import UebernahmenView from '../views/UebernahmenView.vue'
 import RechnungErstellenView from '../views/RechnungErstellenView.vue'
 import MahnwesenView from '../views/MahnwesenView.vue'
+import OffeneRechnungenView from '../views/OffeneRechnungenView.vue'
+import AlleRechnungenView from '../views/AlleRechnungenView.vue'
+import ZahlungBuchenView from '../views/ZahlungBuchenView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -47,6 +50,24 @@ const router = createRouter({
       path: '/rechnung-erstellen',
       name: 'Rechnung erstellen',
       component: RechnungErstellenView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/offene-rechnungen',
+      name: 'Offene Rechnungen',
+      component: OffeneRechnungenView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/alle-rechnungen',
+      name: 'Alle Rechnungen',
+      component: AlleRechnungenView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/zahlung-buchen',
+      name: 'Zahlung buchen',
+      component: ZahlungBuchenView,
       meta: { requiresAuth: true }
     },
     {

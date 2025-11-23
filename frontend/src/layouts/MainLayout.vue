@@ -69,28 +69,27 @@
           </router-link>
 
           <!-- Offene Rechnungen -->
-          <a href="#" class="nav-item" @click.prevent>
+          <router-link to="/offene-rechnungen" class="nav-item">
             <div class="nav-icon">
               <svg viewBox="0 0 24 24" fill="none">
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2"/>
               </svg>
             </div>
             <span class="nav-text">Offene Rechnungen</span>
-            <span class="badge-red" v-show="!sidebarCollapsed">24</span>
-          </a>
+          </router-link>
 
           <!-- Alle Rechnungen -->
-          <a href="#" class="nav-item" @click.prevent>
+          <router-link to="/alle-rechnungen" class="nav-item">
             <div class="nav-icon">
               <svg viewBox="0 0 24 24" fill="none">
                 <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2"/>
               </svg>
             </div>
             <span class="nav-text">Alle Rechnungen</span>
-          </a>
+          </router-link>
 
           <!-- Zahlung buchen -->
-          <a href="#" class="nav-item" @click.prevent>
+          <router-link to="/zahlung-buchen" class="nav-item">
             <div class="nav-icon">
               <svg viewBox="0 0 24 24" fill="none">
                 <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
@@ -98,7 +97,7 @@
               </svg>
             </div>
             <span class="nav-text">Zahlung buchen</span>
-          </a>
+          </router-link>
 
           <!-- Mahnwesen -->
           <router-link to="/mahnwesen" class="nav-item">
