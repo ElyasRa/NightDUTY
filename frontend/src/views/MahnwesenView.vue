@@ -338,7 +338,8 @@ function openDunningDialog(invoice: Invoice) {
   // Set default values
   const today = new Date()
   today.setDate(today.getDate() + 14) // 14 days from now
-  dunningForm.value.new_due_date = today.toISOString().split('T')[0] || ''
+  const dateParts = today.toISOString().split('T')
+  dunningForm.value.new_due_date = dateParts[0] ?? ''
   dunningForm.value.fee_amount = getRecommendedFee()
   
   showDunningDialog.value = true
@@ -356,8 +357,13 @@ function closeDunningDialog() {
 async function createDunning() {
   if (!selectedInvoice.value) return
   
-  if (!dunningForm.value.new_due_date || dunningForm.value.fee_amount < 0) {
-    alert('Bitte füllen Sie alle Felder korrekt aus.')
+  if (!dunningForm.value.new_due_date) {
+    alert('Neue Fälligkeit ist erforderlich.')
+    return
+  }
+  
+  if (dunningForm.value.fee_amount < 0) {
+    alert('Mahngebühr darf nicht negativ sein.')
     return
   }
   

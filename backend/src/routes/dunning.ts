@@ -52,8 +52,8 @@ router.post('/', authenticateToken, async (req, res) => {
     const { invoice_id, dunning_level, new_due_date, fee_amount } = req.body
     const username = (req as any).user?.username || 'system'
     
-    if (!invoice_id || !dunning_level || !new_due_date || fee_amount === undefined) {
-      return res.status(400).json({ error: 'Alle Felder sind erforderlich' })
+    if (!invoice_id || !dunning_level || !new_due_date || fee_amount === undefined || fee_amount < 0) {
+      return res.status(400).json({ error: 'Alle Felder sind erforderlich und Mahngebühr darf nicht negativ sein' })
     }
     
     // Prüfe ob Rechnung existiert
