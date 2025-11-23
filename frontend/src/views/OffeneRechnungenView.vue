@@ -202,7 +202,15 @@ const downloadPDF = async (invoiceId: number) => {
     window.URL.revokeObjectURL(url)
   } catch (err: any) {
     console.error('Error downloading PDF:', err)
-    alert('Fehler beim Herunterladen der PDF')
+    let errorMessage = 'Fehler beim Herunterladen der PDF'
+    if (err.response?.status === 404) {
+      errorMessage = 'PDF nicht gefunden'
+    } else if (err.response?.status === 403 || err.response?.status === 401) {
+      errorMessage = 'Keine Berechtigung zum Herunterladen der PDF'
+    } else if (err.response?.data) {
+      errorMessage = err.response.data.error || errorMessage
+    }
+    alert(errorMessage)
   }
 }
 

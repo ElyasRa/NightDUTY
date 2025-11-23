@@ -251,10 +251,14 @@ const recentActivities = computed(() => {
   const allPayments: { payment: Payment; companyName: string; date: Date }[] = []
   invoices.value.forEach(inv => {
     inv.payments.forEach(payment => {
+      // Use created_at if available and valid, otherwise fall back to payment_date
+      const dateStr = (payment.created_at && payment.created_at.trim()) 
+        ? payment.created_at 
+        : payment.payment_date
       allPayments.push({
         payment,
         companyName: inv.company.name,
-        date: new Date(payment.created_at || payment.payment_date)
+        date: new Date(dateStr)
       })
     })
   })
@@ -326,8 +330,9 @@ const formatTimeAgo = (date: Date): string => {
   const diffHours = Math.floor(diffMs / 3600000)
   const diffDays = Math.floor(diffMs / 86400000)
   
-  if (diffMins < 60) return `Vor ${diffMins} Minuten`
-  if (diffHours < 24) return `Vor ${diffHours} Stunden`
+  if (diffMins < 1) return 'Gerade eben'
+  if (diffMins < 60) return `Vor ${diffMins} ${diffMins === 1 ? 'Minute' : 'Minuten'}`
+  if (diffHours < 24) return `Vor ${diffHours} ${diffHours === 1 ? 'Stunde' : 'Stunden'}`
   if (diffDays === 1) return 'Gestern'
   if (diffDays < 7) return `Vor ${diffDays} Tagen`
   return date.toLocaleDateString('de-DE')
