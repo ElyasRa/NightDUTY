@@ -280,6 +280,33 @@
               </div>
             </div>
 
+            <!-- Feiertage -->
+            <div class="form-section">
+              <h3>Feiertags-Einstellungen</h3>
+              
+              <div class="form-group">
+                <label class="checkbox-label">
+                  <input v-model="formData.holiday_takeover" type="checkbox" />
+                  <span>An Feiertagen übernehmen?</span>
+                </label>
+                <small>Wenn aktiviert, werden Feiertage mit den angegebenen Zeiten berechnet</small>
+              </div>
+
+              <div v-if="formData.holiday_takeover" class="form-group">
+                <label>Zeiten übernehmen von:</label>
+                <select v-model="formData.holiday_schedule_ref">
+                  <option value="monday">Montag</option>
+                  <option value="tuesday">Dienstag</option>
+                  <option value="wednesday">Mittwoch</option>
+                  <option value="thursday">Donnerstag</option>
+                  <option value="friday">Freitag</option>
+                  <option value="saturday">Samstag</option>
+                  <option value="sunday">Sonntag</option>
+                </select>
+                <small>Wählen Sie, welche Wochentag-Zeiten für Feiertage verwendet werden sollen</small>
+              </div>
+            </div>
+
             <div v-if="error" class="error-message">{{ error }}</div>
 
             <div class="modal-footer">
@@ -315,6 +342,8 @@ interface Company {
   price_pkw?: number
   price_lkw?: number
   price_oilspill?: number
+  holiday_takeover?: boolean
+  holiday_schedule_ref?: string
   [key: string]: any
 }
 
@@ -368,7 +397,9 @@ const formData = ref<any>({
   saturday_start: '',
   saturday_end: '',
   sunday_start: '',
-  sunday_end: ''
+  sunday_end: '',
+  holiday_takeover: true,
+  holiday_schedule_ref: 'sunday'
 })
 
 const filteredCompanies = computed(() => {
@@ -449,8 +480,8 @@ function openCreateModal() {
     price_pkw: null,
     price_lkw: null,
     price_oilspill: null,
-  service_fee: null,
-  monthly_rate: null,
+    service_fee: null,
+    monthly_rate: null,
     monday_start: '',
     monday_end: '',
     tuesday_start: '',
@@ -464,7 +495,9 @@ function openCreateModal() {
     saturday_start: '',
     saturday_end: '',
     sunday_start: '',
-    sunday_end: ''
+    sunday_end: '',
+    holiday_takeover: true,
+    holiday_schedule_ref: 'sunday'
   }
   error.value = ''
   showModal.value = true

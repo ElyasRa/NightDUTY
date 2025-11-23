@@ -94,9 +94,17 @@ router.post('/stundenreport', authenticateToken, async (req, res) => {
         isTakeover = true
         takeoverNotes = takeover.notes || 'Frühzeitige Übernahme'
       } else if (isHoliday) {
-        // Feiertag = Sonntag-Zeiten
-        startTime = company.sunday_start
-        endTime = company.sunday_end
+        // Holiday logic: check holiday_takeover setting
+        if (company.holiday_takeover === false) {
+          // Skip this day - no hours
+          startTime = null
+          endTime = null
+        } else {
+          // Use schedule from holiday_schedule_ref
+          const refDay = company.holiday_schedule_ref || 'sunday'
+          startTime = (company as any)[`${refDay}_start`]
+          endTime = (company as any)[`${refDay}_end`]
+        }
       } else {
         // Normale Wochentag-Zeiten
         switch (dayOfWeek) {
@@ -118,12 +126,18 @@ router.post('/stundenreport', authenticateToken, async (req, res) => {
         let startMinutes = startH * 60 + startM
         let endMinutes = endH * 60 + endM
         
-        // Über-Mitternacht-Fix
-        if (endMinutes < startMinutes) {
+        // 24h shift logic: if start and end times are equal, it's a full 24-hour shift
+        let workMinutes
+        if (startTime === endTime) {
+          workMinutes = 24 * 60  // 1440 minutes = 24 hours
+        } else if (endMinutes < startMinutes) {
+          // Overnight shift (e.g., 22:00 to 06:00)
           endMinutes += 24 * 60
+          workMinutes = endMinutes - startMinutes
+        } else {
+          workMinutes = endMinutes - startMinutes
         }
         
-        const workMinutes = endMinutes - startMinutes
         const hours = workMinutes / 60
         
         const day = currentDate.getDate()
