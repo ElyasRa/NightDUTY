@@ -5,6 +5,7 @@ import companyRoutes from './routes/companies'
 import reportsRoutes from './routes/reports'
 import takeoversRoutes from './routes/takeovers'
 import invoicesRoutes from './routes/invoices'
+import dunningRoutes from './routes/dunning'
 
 const app = express()
 
@@ -17,6 +18,7 @@ app.use('/api/companies', companyRoutes)
 app.use('/api/reports', reportsRoutes)
 app.use('/api/takeovers', takeoversRoutes)
 app.use('/api/invoices', invoicesRoutes)
+app.use('/api/dunning', dunningRoutes)
 
 // Static files
 app.use(express.static('public'))
