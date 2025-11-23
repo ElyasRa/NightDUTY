@@ -157,3 +157,20 @@ model Dunning {
   
   @@index([invoice_id])
 }
+
+model SystemSettings {
+  id                      Int      @id @default(autoincrement())
+  smtp_host               String?
+  smtp_port               Int?
+  smtp_user               String?
+  smtp_password           String?
+  smtp_from_address       String?
+  
+  email_invoice_subject   String?
+  email_invoice_body      String?
+  email_dunning_subject   String?
+  email_dunning_body      String?
+  
+  created_at              DateTime @default(now())
+  updated_at              DateTime @updatedAt
+}
