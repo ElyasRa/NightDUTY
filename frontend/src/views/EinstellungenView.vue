@@ -1,0 +1,419 @@
+<template>
+  <MainLayout>
+    <div class="container">
+      <div class="header">
+        <h1 class="title">⚙️ Einstellungen</h1>
+        <p class="subtitle">Systemweite Einstellungen verwalten</p>
+      </div>
+
+      <div v-if="successMessage" class="alert alert-success">
+        {{ successMessage }}
+      </div>
+
+      <div v-if="errorMessage" class="alert alert-error">
+        {{ errorMessage }}
+      </div>
+
+      <!-- SMTP Settings Section -->
+      <div class="card">
+        <h2 class="card-title">📧 E-Mail Server (SMTP)</h2>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label>SMTP Host *</label>
+            <input 
+              v-model="settings.smtp_host" 
+              type="text" 
+              class="input"
+              placeholder="smtp.example.com"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>SMTP Port *</label>
+            <input 
+              v-model.number="settings.smtp_port" 
+              type="number" 
+              class="input"
+              placeholder="587"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>SMTP Benutzername *</label>
+            <input 
+              v-model="settings.smtp_user" 
+              type="text" 
+              class="input"
+              placeholder="user@example.com"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>SMTP Passwort *</label>
+            <input 
+              v-model="settings.smtp_password" 
+              type="password" 
+              class="input"
+              placeholder="••••••••"
+            />
+          </div>
+
+          <div class="form-group full-width">
+            <label>Absender E-Mail *</label>
+            <input 
+              v-model="settings.smtp_from_address" 
+              type="email" 
+              class="input"
+              placeholder="noreply@example.com"
+            />
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button @click="testConnection" class="btn btn-secondary" :disabled="loading">
+            <span v-if="!testing">🔌 Verbindung testen</span>
+            <span v-else>⏳ Teste...</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Email Templates Section -->
+      <div class="card">
+        <h2 class="card-title">📝 E-Mail-Vorlagen</h2>
+        
+        <div class="template-section">
+          <h3 class="template-title">Rechnung versenden</h3>
+          <div class="form-group">
+            <label>Betreff</label>
+            <input 
+              v-model="settings.email_invoice_subject" 
+              type="text" 
+              class="input"
+              placeholder="Rechnung {{invoice_number}} - {{company_name}}"
+            />
+            <p class="help-text" v-text="'Verfügbare Platzhalter: ' + '{{' + 'invoice_number}}, {{company_name}}, {{period}}'"></p>
+          </div>
+
+          <div class="form-group">
+            <label>Nachricht</label>
+            <textarea 
+              v-model="settings.email_invoice_body" 
+              class="textarea"
+              rows="6"
+              placeholder="Sehr geehrte Damen und Herren,..."
+            ></textarea>
+            <p class="help-text" v-text="'Verfügbare Platzhalter: ' + '{{' + 'invoice_number}}, {{company_name}}, {{period}}'"></p>
+          </div>
+        </div>
+
+        <div class="template-section">
+          <h3 class="template-title">Mahnung versenden</h3>
+          <div class="form-group">
+            <label>Betreff</label>
+            <input 
+              v-model="settings.email_dunning_subject" 
+              type="text" 
+              class="input"
+              placeholder="Mahnung - Rechnung {{invoice_number}}"
+            />
+            <p class="help-text" v-text="'Verfügbare Platzhalter: ' + '{{' + 'invoice_number}}, {{company_name}}'"></p>
+          </div>
+
+          <div class="form-group">
+            <label>Nachricht</label>
+            <textarea 
+              v-model="settings.email_dunning_body" 
+              class="textarea"
+              rows="6"
+              placeholder="Sehr geehrte Damen und Herren,..."
+            ></textarea>
+            <p class="help-text" v-text="'Verfügbare Platzhalter: ' + '{{' + 'invoice_number}}, {{company_name}}'"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Save Button -->
+      <div class="actions">
+        <button @click="saveSettings" class="btn btn-primary" :disabled="loading">
+          <span v-if="!loading">💾 Einstellungen speichern</span>
+          <span v-else>⏳ Speichere...</span>
+        </button>
+      </div>
+    </div>
+  </MainLayout>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import MainLayout from '../layouts/MainLayout.vue'
+
+const settings = ref({
+  smtp_host: '',
+  smtp_port: 587,
+  smtp_user: '',
+  smtp_password: '',
+  smtp_from_address: '',
+  email_invoice_subject: 'Rechnung {{invoice_number}} - {{company_name}}',
+  email_invoice_body: 'Sehr geehrte Damen und Herren,\n\nim Anhang finden Sie die Rechnung {{invoice_number}} sowie den Stundenreport für den Zeitraum {{period}}.\n\nVielen Dank für Ihre Zusammenarbeit.\n\nMit freundlichen Grüßen\nIhr NightDUTY Team',
+  email_dunning_subject: 'Mahnung - Rechnung {{invoice_number}}',
+  email_dunning_body: 'Sehr geehrte Damen und Herren,\n\nleider haben wir noch keine Zahlung für die Rechnung {{invoice_number}} erhalten.\n\nBitte begleichen Sie den offenen Betrag umgehend.\n\nMit freundlichen Grüßen\nIhr NightDUTY Team'
+})
+
+const loading = ref(false)
+const testing = ref(false)
+const successMessage = ref('')
+const errorMessage = ref('')
+
+const API_URL = 'http://localhost:3000/api'
+
+onMounted(async () => {
+  await loadSettings()
+})
+
+async function loadSettings() {
+  try {
+    const token = localStorage.getItem('token')
+    const response = await axios.get(`${API_URL}/settings`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    
+    if (response.data) {
+      settings.value = { ...settings.value, ...response.data }
+    }
+  } catch (error) {
+    console.error('Error loading settings:', error)
+  }
+}
+
+async function testConnection() {
+  testing.value = true
+  errorMessage.value = ''
+  successMessage.value = ''
+
+  try {
+    const token = localStorage.getItem('token')
+    const response = await axios.post(
+      `${API_URL}/settings/test-connection`,
+      {
+        smtp_host: settings.value.smtp_host,
+        smtp_port: settings.value.smtp_port,
+        smtp_user: settings.value.smtp_user,
+        smtp_password: settings.value.smtp_password
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    )
+
+    if (response.data.success) {
+      successMessage.value = '✅ ' + response.data.message
+    } else {
+      errorMessage.value = '❌ ' + response.data.message
+    }
+  } catch (error: any) {
+    errorMessage.value = '❌ Fehler beim Testen der Verbindung: ' + (error.response?.data?.error || error.message)
+  } finally {
+    testing.value = false
+  }
+}
+
+async function saveSettings() {
+  loading.value = true
+  errorMessage.value = ''
+  successMessage.value = ''
+
+  try {
+    const token = localStorage.getItem('token')
+    await axios.post(
+      `${API_URL}/settings`,
+      settings.value,
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    )
+
+    successMessage.value = '✅ Einstellungen erfolgreich gespeichert!'
+    
+    setTimeout(() => {
+      successMessage.value = ''
+    }, 3000)
+  } catch (error: any) {
+    errorMessage.value = '❌ Fehler beim Speichern: ' + (error.response?.data?.error || error.message)
+  } finally {
+    loading.value = false
+  }
+}
+</script>
+
+<style scoped>
+.container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.alert {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.alert-success {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #10b981;
+}
+
+.alert-error {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.input,
+.textarea {
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.help-text {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.template-section {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.template-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.template-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+</style>
