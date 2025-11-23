@@ -115,6 +115,7 @@
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 import MainLayout from '../layouts/MainLayout.vue'
+import { API_BASE_URL } from '../config'
 
 const activeTab = ref('invoice')
 const companies = ref<any[]>([])
@@ -126,8 +127,6 @@ const emailBody = ref('')
 const sending = ref(false)
 const successMessage = ref('')
 const errorMessage = ref('')
-
-const API_URL = 'http://localhost:3000/api'
 
 const selectedInvoice = computed(() => {
   return invoices.value.find(inv => inv.id === parseInt(selectedInvoiceId.value))
@@ -146,7 +145,7 @@ onMounted(async () => {
 async function loadCompanies() {
   try {
     const token = localStorage.getItem('token')
-    const response = await axios.get(`${API_URL}/companies`, {
+    const response = await axios.get(`${API_BASE_URL}/companies`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     companies.value = response.data
@@ -158,7 +157,7 @@ async function loadCompanies() {
 async function loadInvoices() {
   try {
     const token = localStorage.getItem('token')
-    const response = await axios.get(`${API_URL}/invoices`, {
+    const response = await axios.get(`${API_BASE_URL}/invoices`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     invoices.value = response.data
@@ -179,7 +178,7 @@ async function onInvoiceChange() {
   // Load template and fill in placeholders
   try {
     const token = localStorage.getItem('token')
-    const response = await axios.get(`${API_URL}/settings`, {
+    const response = await axios.get(`${API_BASE_URL}/settings`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     
@@ -232,7 +231,7 @@ async function sendEmail() {
   try {
     const token = localStorage.getItem('token')
     const response = await axios.post(
-      `${API_URL}/email/send-invoice`,
+      `${API_BASE_URL}/email/send-invoice`,
       {
         invoiceId: selectedInvoiceId.value,
         subject: emailSubject.value,

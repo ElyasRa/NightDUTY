@@ -188,6 +188,9 @@ router.post('/send-invoice', authenticateToken, async (req, res) => {
     
     const periodDescription = `${startDay.toString().padStart(2, '0')}.${startMonth.toString().padStart(2, '0')}.${startYear} - ${endDay.toString().padStart(2, '0')}.${endMonth.toString().padStart(2, '0')}.${endYear}`
     
+    // Use company hourly rate if available, otherwise use a default
+    const hourlyRate = invoice.hourly_rate || invoice.company.hourly_rate || 18.3
+    
     const reportData = {
       company_name: invoice.company.name,
       period: periodDescription,
@@ -195,7 +198,7 @@ router.post('/send-invoice', authenticateToken, async (req, res) => {
       entries: entries,
       total_hours: Math.round(totalHours),
       total_employees: 3.47,
-      hourly_rate: 18.3
+      hourly_rate: hourlyRate
     }
     
     const stundenreportPdfBuffer = await generateStundenreportPDFBuffer(reportData)

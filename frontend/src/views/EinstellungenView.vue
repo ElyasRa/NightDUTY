@@ -92,7 +92,7 @@
               class="input"
               placeholder="Rechnung {{invoice_number}} - {{company_name}}"
             />
-            <p class="help-text" v-text="'Verfügbare Platzhalter: ' + '{{' + 'invoice_number}}, {{company_name}}, {{period}}'"></p>
+            <p class="help-text">{{ invoicePlaceholders }}</p>
           </div>
 
           <div class="form-group">
@@ -103,7 +103,7 @@
               rows="6"
               placeholder="Sehr geehrte Damen und Herren,..."
             ></textarea>
-            <p class="help-text" v-text="'Verfügbare Platzhalter: ' + '{{' + 'invoice_number}}, {{company_name}}, {{period}}'"></p>
+            <p class="help-text">{{ invoicePlaceholders }}</p>
           </div>
         </div>
 
@@ -117,7 +117,7 @@
               class="input"
               placeholder="Mahnung - Rechnung {{invoice_number}}"
             />
-            <p class="help-text" v-text="'Verfügbare Platzhalter: ' + '{{' + 'invoice_number}}, {{company_name}}'"></p>
+            <p class="help-text">{{ dunningPlaceholders }}</p>
           </div>
 
           <div class="form-group">
@@ -128,7 +128,7 @@
               rows="6"
               placeholder="Sehr geehrte Damen und Herren,..."
             ></textarea>
-            <p class="help-text" v-text="'Verfügbare Platzhalter: ' + '{{' + 'invoice_number}}, {{company_name}}'"></p>
+            <p class="help-text">{{ dunningPlaceholders }}</p>
           </div>
         </div>
       </div>
@@ -145,9 +145,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import MainLayout from '../layouts/MainLayout.vue'
+import { API_BASE_URL } from '../config'
+
+const PLACEHOLDER_INVOICE = '{{invoice_number}}, {{company_name}}, {{period}}'
+const PLACEHOLDER_DUNNING = '{{invoice_number}}, {{company_name}}'
+
+const invoicePlaceholders = computed(() => `Verfügbare Platzhalter: ${PLACEHOLDER_INVOICE}`)
+const dunningPlaceholders = computed(() => `Verfügbare Platzhalter: ${PLACEHOLDER_DUNNING}`)
 
 const settings = ref({
   smtp_host: '',
@@ -166,8 +173,6 @@ const testing = ref(false)
 const successMessage = ref('')
 const errorMessage = ref('')
 
-const API_URL = 'http://localhost:3000/api'
-
 onMounted(async () => {
   await loadSettings()
 })
@@ -175,7 +180,7 @@ onMounted(async () => {
 async function loadSettings() {
   try {
     const token = localStorage.getItem('token')
-    const response = await axios.get(`${API_URL}/settings`, {
+    const response = await axios.get(`${API_BASE_URL}/settings`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     
@@ -195,7 +200,7 @@ async function testConnection() {
   try {
     const token = localStorage.getItem('token')
     const response = await axios.post(
-      `${API_URL}/settings/test-connection`,
+      `${API_BASE_URL}/settings/test-connection`,
       {
         smtp_host: settings.value.smtp_host,
         smtp_port: settings.value.smtp_port,
@@ -227,7 +232,7 @@ async function saveSettings() {
   try {
     const token = localStorage.getItem('token')
     await axios.post(
-      `${API_URL}/settings`,
+      `${API_BASE_URL}/settings`,
       settings.value,
       {
         headers: { Authorization: `Bearer ${token}` }

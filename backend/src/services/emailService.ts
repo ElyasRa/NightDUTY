@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer'
+import nodemailer, { SendMailOptions } from 'nodemailer'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
@@ -39,7 +39,7 @@ export async function sendEmail(options: EmailOptions): Promise<void> {
   })
   
   // Prepare mail options
-  const mailOptions: any = {
+  const mailOptions: SendMailOptions = {
     from: settings.smtp_from_address,
     to: options.to,
     subject: options.subject,
