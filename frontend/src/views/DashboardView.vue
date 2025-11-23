@@ -11,8 +11,8 @@
         </div>
         <div class="stat-mini-icon">📄</div>
         <p class="stat-label">Offene Rechnungen</p>
-        <h3 class="stat-value">0</h3>
-        <span class="stat-trend down">↓ +12% seit letztem Monat</span>
+        <h3 class="stat-value">{{ loading ? '...' : offeneRechnungenCount }}</h3>
+        <span class="stat-info">{{ loading ? '' : offeneRechnungenCount === 1 ? '1 offene Rechnung' : `${offeneRechnungenCount} offene Rechnungen` }}</span>
       </div>
 
       <div class="stat-card">
@@ -24,8 +24,8 @@
         </div>
         <div class="stat-mini-icon">💰</div>
         <p class="stat-label">Offener Umsatz</p>
-        <h3 class="stat-value">0,00 €</h3>
-        <span class="stat-info">0 unbezahlt</span>
+        <h3 class="stat-value">{{ loading ? '...' : formatCurrency(offenerUmsatz) }}</h3>
+        <span class="stat-info">{{ loading ? '' : `${offeneRechnungenCount} unbezahlt` }}</span>
       </div>
 
       <div class="stat-card">
@@ -37,8 +37,8 @@
         </div>
         <div class="stat-mini-icon">🏢</div>
         <p class="stat-label">Aktive Firmen</p>
-        <h3 class="stat-value">0</h3>
-        <span class="stat-trend up">↑ +3 diesen Monat</span>
+        <h3 class="stat-value">{{ loading ? '...' : aktiveFirmen }}</h3>
+        <span class="stat-info">{{ loading ? '' : `${aktiveFirmen} aktive Firmen` }}</span>
       </div>
 
       <div class="stat-card">
@@ -49,8 +49,8 @@
         </div>
         <div class="stat-mini-icon">📊</div>
         <p class="stat-label">Monatsumsatz</p>
-        <h3 class="stat-value">0,00 €</h3>
-        <span class="stat-trend down-red">↓ -18% vs. letzter Monat</span>
+        <h3 class="stat-value">{{ loading ? '...' : formatCurrency(monatsumsatz) }}</h3>
+        <span class="stat-info">{{ loading ? '' : 'Laufender Monat' }}</span>
       </div>
     </div>
 
@@ -97,7 +97,7 @@
               </svg>
             </div>
             <span>Offene Rechnungen</span>
-            <span class="quick-badge">0</span>
+            <span v-if="!loading && offeneRechnungenCount > 0" class="quick-badge">{{ offeneRechnungenCount }}</span>
           </router-link>
         </div>
       </div>
@@ -105,53 +105,30 @@
       <!-- Recent Activity -->
       <div class="card">
         <h2 class="card-title">Letzte Aktivitäten</h2>
-        <div class="activity-list">
-          <div class="activity-item">
-            <div class="activity-icon blue">
-              <svg viewBox="0 0 24 24" fill="none">
+        <div v-if="loading" class="activity-loading">
+          <div class="spinner-small"></div>
+          <p>Lade Aktivitäten...</p>
+        </div>
+        <div v-else-if="recentActivities.length === 0" class="activity-empty">
+          <p>Keine Aktivitäten vorhanden</p>
+        </div>
+        <div v-else class="activity-list">
+          <div v-for="(activity, index) in recentActivities" :key="index" class="activity-item">
+            <div class="activity-icon" :class="activity.color">
+              <svg v-if="activity.type === 'invoice'" viewBox="0 0 24 24" fill="none">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2"/>
               </svg>
-            </div>
-            <div class="activity-content">
-              <p class="activity-title">Rechnung RE-2025-001 erstellt</p>
-              <span class="activity-time">Vor 2 Stunden</span>
-            </div>
-          </div>
-
-          <div class="activity-item">
-            <div class="activity-icon green">
-              <svg viewBox="0 0 24 24" fill="none">
+              <svg v-else-if="activity.type === 'payment'" viewBox="0 0 24 24" fill="none">
                 <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
                 <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               </svg>
-            </div>
-            <div class="activity-content">
-              <p class="activity-title">Zahlung für Mustermann GmbH gebucht</p>
-              <span class="activity-time">Vor 4 Stunden</span>
-            </div>
-          </div>
-
-          <div class="activity-item">
-            <div class="activity-icon purple">
-              <svg viewBox="0 0 24 24" fill="none">
+              <svg v-else viewBox="0 0 24 24" fill="none">
                 <path d="M3 21h18M5 21V7l8-4v18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               </svg>
             </div>
             <div class="activity-content">
-              <p class="activity-title">Neue Firma hinzugefügt: Schmidt AG</p>
-              <span class="activity-time">Gestern</span>
-            </div>
-          </div>
-
-          <div class="activity-item">
-            <div class="activity-icon orange">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2"/>
-              </svg>
-            </div>
-            <div class="activity-content">
-              <p class="activity-title">Stundenreport November generiert</p>
-              <span class="activity-time">Vor 2 Tagen</span>
+              <p class="activity-title">{{ activity.title }}</p>
+              <span class="activity-time">{{ formatTimeAgo(activity.date) }}</span>
             </div>
           </div>
         </div>
@@ -170,7 +147,195 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, computed } from 'vue'
+import axios from 'axios'
 import MainLayout from '../layouts/MainLayout.vue'
+
+interface Company {
+  id: number
+  name: string
+  is_active: boolean
+  created_at: string
+}
+
+interface Payment {
+  id: number
+  amount: number
+  payment_date: string
+  created_at: string
+}
+
+interface Invoice {
+  id: number
+  invoice_number: string
+  company: {
+    id: number
+    name: string
+  }
+  invoice_date: string
+  due_date: string
+  total_amount: number
+  status: string
+  payments: Payment[]
+  created_at: string
+}
+
+interface Activity {
+  type: 'invoice' | 'payment' | 'company'
+  title: string
+  date: Date
+  icon: string
+  color: string
+}
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
+const invoices = ref<Invoice[]>([])
+const companies = ref<Company[]>([])
+const loading = ref(true)
+
+// Computed statistics
+const offeneRechnungenCount = computed(() => {
+  return invoices.value.filter(inv => inv.status === 'open' || inv.status === 'partial').length
+})
+
+const offenerUmsatz = computed(() => {
+  return invoices.value
+    .filter(inv => inv.status === 'open' || inv.status === 'partial')
+    .reduce((sum, inv) => {
+      const totalPaid = inv.payments.reduce((pSum, p) => pSum + p.amount, 0)
+      return sum + (inv.total_amount - totalPaid)
+    }, 0)
+})
+
+const aktiveFirmen = computed(() => {
+  return companies.value.filter(c => c.is_active).length
+})
+
+const monatsumsatz = computed(() => {
+  const now = new Date()
+  const currentMonth = now.getMonth()
+  const currentYear = now.getFullYear()
+  
+  let total = 0
+  invoices.value.forEach(invoice => {
+    invoice.payments.forEach(payment => {
+      const paymentDate = new Date(payment.payment_date)
+      if (paymentDate.getMonth() === currentMonth && paymentDate.getFullYear() === currentYear) {
+        total += payment.amount
+      }
+    })
+  })
+  return total
+})
+
+const recentActivities = computed(() => {
+  const activities: Activity[] = []
+  
+  // Add latest invoices (up to 3)
+  const latestInvoices = [...invoices.value]
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 3)
+  
+  latestInvoices.forEach(inv => {
+    activities.push({
+      type: 'invoice',
+      title: `Rechnung ${inv.invoice_number} erstellt`,
+      date: new Date(inv.created_at),
+      icon: 'blue',
+      color: 'blue'
+    })
+  })
+  
+  // Add latest payments (up to 3)
+  const allPayments: { payment: Payment; companyName: string; date: Date }[] = []
+  invoices.value.forEach(inv => {
+    inv.payments.forEach(payment => {
+      allPayments.push({
+        payment,
+        companyName: inv.company.name,
+        date: new Date(payment.created_at || payment.payment_date)
+      })
+    })
+  })
+  
+  const latestPayments = allPayments
+    .sort((a, b) => b.date.getTime() - a.date.getTime())
+    .slice(0, 3)
+  
+  latestPayments.forEach(({ payment, companyName, date }) => {
+    activities.push({
+      type: 'payment',
+      title: `Zahlung für ${companyName} gebucht`,
+      date,
+      icon: 'green',
+      color: 'green'
+    })
+  })
+  
+  // Add latest companies (up to 2)
+  const latestCompanies = [...companies.value]
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 2)
+  
+  latestCompanies.forEach(company => {
+    activities.push({
+      type: 'company',
+      title: `Neue Firma hinzugefügt: ${company.name}`,
+      date: new Date(company.created_at),
+      icon: 'purple',
+      color: 'purple'
+    })
+  })
+  
+  // Sort all activities by date and return top 5
+  return activities
+    .sort((a, b) => b.date.getTime() - a.date.getTime())
+    .slice(0, 5)
+})
+
+const fetchData = async () => {
+  loading.value = true
+  try {
+    const token = localStorage.getItem('token')
+    const headers = { Authorization: `Bearer ${token}` }
+    
+    // Fetch invoices and companies in parallel
+    const [invoicesRes, companiesRes] = await Promise.all([
+      axios.get(`${API_URL}/api/invoices`, { params: { status: 'all' }, headers }),
+      axios.get(`${API_URL}/api/companies`, { headers })
+    ])
+    
+    invoices.value = invoicesRes.data
+    companies.value = companiesRes.data
+  } catch (error) {
+    console.error('Error fetching dashboard data:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+const formatCurrency = (amount: number): string => {
+  return amount.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'
+}
+
+const formatTimeAgo = (date: Date): string => {
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffMins = Math.floor(diffMs / 60000)
+  const diffHours = Math.floor(diffMs / 3600000)
+  const diffDays = Math.floor(diffMs / 86400000)
+  
+  if (diffMins < 60) return `Vor ${diffMins} Minuten`
+  if (diffHours < 24) return `Vor ${diffHours} Stunden`
+  if (diffDays === 1) return 'Gestern'
+  if (diffDays < 7) return `Vor ${diffDays} Tagen`
+  return date.toLocaleDateString('de-DE')
+}
+
+onMounted(() => {
+  fetchData()
+})
 </script>
 
 <style scoped>
@@ -377,6 +542,26 @@ import MainLayout from '../layouts/MainLayout.vue'
   font-weight: 600;
   padding: 0.125rem 0.5rem;
   border-radius: 10px;
+}
+
+.activity-loading, .activity-empty {
+  text-align: center;
+  padding: 2rem;
+  color: #9ca3af;
+}
+
+.spinner-small {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 0.5rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .activity-list {
