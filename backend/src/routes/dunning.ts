@@ -52,13 +52,13 @@ router.post('/', authenticateToken, async (req, res) => {
     const { invoice_id, dunning_level, new_due_date, fee_amount } = req.body
     const username = (req as any).user?.username || 'system'
     
-    if (!invoice_id || !dunning_level || !new_due_date || fee_amount === undefined) {
-      return res.status(400).json({ error: 'Alle Felder sind erforderlich' })
+    if (!invoice_id || !dunning_level || !new_due_date || fee_amount === undefined || isNaN(fee_amount) || fee_amount < 0) {
+      return res.status(400).json({ error: 'Alle Felder sind erforderlich und müssen gültig sein' })
     }
     
     // Check if invoice exists and is overdue
     const invoice = await prisma.invoice.findUnique({
-      where: { id: parseInt(invoice_id) }
+      where: { id: parseInt(invoice_id, 10) }
     })
     
     if (!invoice) {
@@ -72,8 +72,8 @@ router.post('/', authenticateToken, async (req, res) => {
     // Create dunning notice
     const dunning = await prisma.dunning.create({
       data: {
-        invoice_id: parseInt(invoice_id),
-        dunning_level: parseInt(dunning_level),
+        invoice_id: parseInt(invoice_id, 10),
+        dunning_level: parseInt(dunning_level, 10),
         dunning_date: new Date(),
         new_due_date: new Date(new_due_date),
         fee_amount: parseFloat(fee_amount),
@@ -83,9 +83,9 @@ router.post('/', authenticateToken, async (req, res) => {
     
     // Update invoice dunning level
     await prisma.invoice.update({
-      where: { id: parseInt(invoice_id) },
+      where: { id: parseInt(invoice_id, 10) },
       data: {
-        dunning_level: parseInt(dunning_level)
+        dunning_level: parseInt(dunning_level, 10)
       }
     })
     

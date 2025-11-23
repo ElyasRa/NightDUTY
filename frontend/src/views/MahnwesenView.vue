@@ -268,7 +268,7 @@ const getDunningClass = (level: number) => {
 const getDaysOverdue = (dueDate: string) => {
   const today = new Date()
   const due = new Date(dueDate)
-  const diffTime = Math.abs(today.getTime() - due.getTime())
+  const diffTime = today.getTime() - due.getTime()
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
   return diffDays
 }
@@ -313,8 +313,8 @@ const openDunningModal = (invoice: Invoice) => {
   // Set new due date (14 days from now)
   const newDate = new Date()
   newDate.setDate(newDate.getDate() + 14)
-  const dateStr = newDate.toISOString().split('T')[0]
-  dunningForm.value.new_due_date = dateStr || ''
+  const isoDate = newDate.toISOString()
+  dunningForm.value.new_due_date = isoDate.substring(0, 10)
   
   showModal.value = true
 }
