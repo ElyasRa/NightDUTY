@@ -8,6 +8,18 @@ import jwt from 'jsonwebtoken'
 const router = Router()
 const prisma = new PrismaClient()
 
+const MINUTES_PER_DAY = 24 * 60
+
+// Helper function to safely access company schedule fields
+function getCompanySchedule(company: any, day: string): { start: string | null, end: string | null } {
+  const startField = `${day}_start`
+  const endField = `${day}_end`
+  return {
+    start: company[startField] || null,
+    end: company[endField] || null
+  }
+}
+
 async function generateInvoiceNumber(): Promise<string> {
   const year = new Date().getFullYear()
   const lastInvoice = await prisma.invoice.findFirst({
@@ -104,8 +116,9 @@ router.post('/calculate-hours', authenticateToken, async (req, res) => {
         } else {
           // Use schedule from holiday_schedule_ref
           const refDay = company.holiday_schedule_ref || 'sunday'
-          startTime = (company as any)[`${refDay}_start`]
-          endTime = (company as any)[`${refDay}_end`]
+          const schedule = getCompanySchedule(company, refDay)
+          startTime = schedule.start
+          endTime = schedule.end
         }
         dayType = 'holiday'
       } else {
@@ -130,10 +143,10 @@ router.post('/calculate-hours', authenticateToken, async (req, res) => {
         // 24h shift logic: if start and end times are equal, it's a full 24-hour shift
         let workMinutes
         if (startTime === endTime) {
-          workMinutes = 24 * 60  // 1440 minutes = 24 hours
+          workMinutes = MINUTES_PER_DAY  // 1440 minutes = 24 hours
         } else if (endMinutes < startMinutes) {
           // Overnight shift (e.g., 22:00 to 06:00)
-          endMinutes += 24 * 60
+          endMinutes += MINUTES_PER_DAY
           workMinutes = endMinutes - startMinutes
         } else {
           workMinutes = endMinutes - startMinutes
