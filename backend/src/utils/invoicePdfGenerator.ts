@@ -30,6 +30,8 @@ interface InvoiceData {
   price_pkw?: number
   price_lkw?: number
   price_oilspill?: number
+  service_fee?: number
+  monthly_rate?: number
   
   subtotal: number
   tax_rate: number
@@ -221,6 +223,14 @@ export function generateInvoicePDF(data: InvoiceData, res: Response) {
     if (data.count_oilspill && data.count_oilspill > 0) {
       addRow(artNr, 'Ölspur-Beseitigung', data.count_oilspill.toString(), `${data.price_oilspill?.toFixed(2)} €`, `${(data.count_oilspill * data.price_oilspill!).toFixed(2)} €`)
     }
+  } else if (data.billing_type === 'flat_rate') {
+    addRow(
+      artNr,
+      'Rufbereitschaftsdienst Monatspauschale',
+      '1',
+      `${(data.monthly_rate || 0).toFixed(2)} €`,
+      `${(data.monthly_rate || 0).toFixed(2)} €`
+    )
   }
   
   doc.rect(tableLeft, y, tableWidth, 22).fill('#ffffff')

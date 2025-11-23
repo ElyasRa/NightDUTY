@@ -265,6 +265,7 @@ router.get('/:id/pdf', async (req, res) => {
       price_lkw: invoice.price_lkw || undefined,
       price_oilspill: invoice.price_oilspill || undefined,
       service_fee: invoice.service_fee || undefined,
+      monthly_rate: invoice.monthly_rate || undefined,
       subtotal: invoice.subtotal,
       tax_rate: invoice.tax_rate,
       tax_amount: invoice.tax_amount,
@@ -302,7 +303,7 @@ router.post('/', authenticateToken, async (req, res) => {
         (data.count_oilspill || 0) * (data.price_oilspill || 0)
     } else if (data.billing_type === 'flat_rate') {
       // Pauschale
-      subtotal = data.service_fee || 0
+      subtotal = data.monthly_rate || 0
     }
 
     const taxRate = data.tax_rate || 19
