@@ -269,7 +269,7 @@ async function loadOverdueInvoices() {
   
   try {
     const token = localStorage.getItem('token')
-    const response = await axios.get(`${API_URL}/dunning/overdue`, {
+    const response = await axios.get(`${API_URL}/dunning`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     overdueInvoices.value = response.data
@@ -325,9 +325,9 @@ function getRecommendedFee(): number {
   const level = selectedInvoice.value.dunning_level + 1
   // Recommended fees per dunning level
   const fees: { [key: number]: number } = {
-    1: 5.00,
-    2: 10.00,
-    3: 15.00
+    1: 2.50,
+    2: 5.00,
+    3: 10.00
   }
   return fees[level] || 0
 }
@@ -337,7 +337,7 @@ function openDunningDialog(invoice: Invoice) {
   
   // Set default values
   const today = new Date()
-  today.setDate(today.getDate() + 14) // 14 days from now
+  today.setDate(today.getDate() + 7) // 7 days from now
   const dateParts = today.toISOString().split('T')
   dunningForm.value.new_due_date = dateParts[0] ?? ''
   dunningForm.value.fee_amount = getRecommendedFee()

@@ -6,7 +6,7 @@ const router = Router()
 const prisma = new PrismaClient()
 
 // Überfällige Rechnungen abrufen
-router.get('/overdue', authenticateToken, async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
   try {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
