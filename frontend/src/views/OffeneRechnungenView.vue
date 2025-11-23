@@ -124,7 +124,7 @@ const invoices = ref<Invoice[]>([])
 const loading = ref(true)
 const error = ref('')
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const API_URL = 'http://188.245.198.220:3000'
 
 const fetchInvoices = async () => {
   loading.value = true

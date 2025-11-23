@@ -241,7 +241,7 @@ interface Invoice {
   dunnings?: Dunning[]
 }
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+const API_URL = 'http://188.245.198.220:3000/api'
 const loading = ref(true)
 const error = ref('')
 const overdueInvoices = ref<Invoice[]>([])

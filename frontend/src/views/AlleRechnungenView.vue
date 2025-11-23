@@ -249,7 +249,7 @@ const searchQuery = ref('')
 const statusFilter = ref('all')
 const selectedInvoice = ref<Invoice | null>(null)
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const API_URL = 'http://188.245.198.220:3000'
 
 const filteredInvoices = computed(() => {
   let result = invoices.value
