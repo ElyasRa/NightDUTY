@@ -113,6 +113,7 @@ model Invoice {
   
   status          String    @default("open")
   paid_date       DateTime?
+  dunning_level   Int       @default(0)
   
   notes           String?
   created_by      String?
@@ -120,6 +121,7 @@ model Invoice {
   updated_at      DateTime  @updatedAt
   
   payments        Payment[]
+  dunnings        Dunning[]
   
   @@index([company_id])
   @@index([invoice_date])
@@ -138,6 +140,20 @@ model Payment {
   
   created_by  String?
   created_at  DateTime @default(now())
+  
+  @@index([invoice_id])
+}
+
+model Dunning {
+  id            Int      @id @default(autoincrement())
+  invoice_id    Int
+  invoice       Invoice  @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+  dunning_level Int
+  dunning_date  DateTime
+  new_due_date  DateTime
+  fee_amount    Float
+  created_by    String?
+  created_at    DateTime @default(now())
   
   @@index([invoice_id])
 }
