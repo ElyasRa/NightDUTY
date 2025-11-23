@@ -18,9 +18,9 @@ model User {
 }
 
 model Company {
-  id              Int         @id @default(autoincrement())
-  name            String      @unique
-  customer_number String?     @unique
+  id              Int     @id @default(autoincrement())
+  name            String  @unique
+  customer_number String? @unique
   contact_person  String?
   email           String?
   phone           String?
@@ -30,8 +30,8 @@ model Company {
   country         String?
   federal_state   String?
   notes           String?
-  is_active       Boolean     @default(true)
-  
+  is_active       Boolean @default(true)
+
   monday_start    String?
   monday_end      String?
   tuesday_start   String?
@@ -46,98 +46,116 @@ model Company {
   saturday_end    String?
   sunday_start    String?
   sunday_end      String?
-  
-  billing_type    String?
-  hourly_rate     Float?
-  price_pkw       Float?
-  price_lkw       Float?
-  price_oilspill  Float?
-  service_fee     Float?
-  monthly_rate    Float?
-  
-  created_at      DateTime    @default(now())
-  updated_at      DateTime    @updatedAt
-  
-  takeovers       EarlyTakeover[]
-  invoices        Invoice[]
+
+  billing_type   String?
+  hourly_rate    Float?
+  price_pkw      Float?
+  price_lkw      Float?
+  price_oilspill Float?
+  service_fee    Float?
+  monthly_rate   Float?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  takeovers EarlyTakeover[]
+  invoices  Invoice[]
 }
 
 model EarlyTakeover {
-  id          Int      @id @default(autoincrement())
-  company_id  Int
-  company     Company  @relation(fields: [company_id], references: [id], onDelete: Cascade)
-  
-  start_date  DateTime
-  end_date    DateTime
-  start_time  String
-  end_time    String
-  notes       String?
-  
-  created_by  String?
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-  
+  id         Int     @id @default(autoincrement())
+  company_id Int
+  company    Company @relation(fields: [company_id], references: [id], onDelete: Cascade)
+
+  start_date DateTime
+  end_date   DateTime
+  start_time String
+  end_time   String
+  notes      String?
+
+  created_by String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
   @@index([company_id])
   @@index([start_date, end_date])
 }
 
 model Invoice {
-  id              Int       @id @default(autoincrement())
-  invoice_number  String    @unique
-  company_id      Int
-  company         Company   @relation(fields: [company_id], references: [id])
-  
-  invoice_date    DateTime
-  due_date        DateTime
-  period_start    DateTime
-  period_end      DateTime
-  
-  billing_type    String
-  
-  total_hours     Float?
-  hourly_rate     Float?
-  
-  count_pkw       Int?
-  count_lkw       Int?
-  count_oilspill  Int?
-  price_pkw       Float?
-  price_lkw       Float?
-  price_oilspill  Float?
-  service_fee     Float?
-  monthly_rate    Float?
-  
-  subtotal        Float
-  tax_rate        Float     @default(19)
-  tax_amount      Float
-  total_amount    Float
-  
-  status          String    @default("open")
-  paid_date       DateTime?
-  
-  notes           String?
-  created_by      String?
-  created_at      DateTime  @default(now())
-  updated_at      DateTime  @updatedAt
-  
-  payments        Payment[]
-  
+  id             Int     @id @default(autoincrement())
+  invoice_number String  @unique
+  company_id     Int
+  company        Company @relation(fields: [company_id], references: [id])
+
+  invoice_date DateTime
+  due_date     DateTime
+  period_start DateTime
+  period_end   DateTime
+
+  billing_type String
+
+  total_hours Float?
+  hourly_rate Float?
+
+  count_pkw      Int?
+  count_lkw      Int?
+  count_oilspill Int?
+  price_pkw      Float?
+  price_lkw      Float?
+  price_oilspill Float?
+  service_fee    Float?
+  monthly_rate   Float?
+
+  subtotal     Float
+  tax_rate     Float @default(19)
+  tax_amount   Float
+  total_amount Float
+
+  status        String    @default("open")
+  paid_date     DateTime?
+  dunning_level Int       @default(0)
+
+  notes      String?
+  created_by String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  payments Payment[]
+  dunnings Dunning[]
+
   @@index([company_id])
   @@index([invoice_date])
   @@index([status])
 }
 
 model Payment {
-  id          Int      @id @default(autoincrement())
-  invoice_id  Int
-  invoice     Invoice  @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
-  
-  amount      Float
-  payment_date DateTime
+  id         Int     @id @default(autoincrement())
+  invoice_id Int
+  invoice    Invoice @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+
+  amount         Float
+  payment_date   DateTime
   payment_method String?
-  notes       String?
-  
-  created_by  String?
-  created_at  DateTime @default(now())
-  
+  notes          String?
+
+  created_by String?
+  created_at DateTime @default(now())
+
+  @@index([invoice_id])
+}
+
+model Dunning {
+  id         Int     @id @default(autoincrement())
+  invoice_id Int
+  invoice    Invoice @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+
+  dunning_level Int
+  dunning_date  DateTime
+  new_due_date  DateTime
+  fee_amount    Float
+
+  created_by String?
+  created_at DateTime @default(now())
+
   @@index([invoice_id])
 }
