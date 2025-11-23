@@ -64,13 +64,22 @@
                 </span>
               </td>
               <td class="text-center">
-                <button 
-                  @click="redirectToPayment(invoice.id)" 
-                  class="btn-action"
-                  title="Zahlung buchen"
-                >
-                  💳 Zahlung buchen
-                </button>
+                <div class="action-buttons">
+                  <button 
+                    @click="redirectToPayment(invoice.id)" 
+                    class="btn-action"
+                    title="Zahlung buchen"
+                  >
+                    💳 Zahlung buchen
+                  </button>
+                  <button 
+                    @click="downloadPDF(invoice.id)" 
+                    class="btn-action-secondary"
+                    title="PDF herunterladen"
+                  >
+                    📄 PDF
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -171,6 +180,38 @@ const getStatusLabel = (status: string): string => {
 
 const redirectToPayment = (invoiceId: number) => {
   router.push(`/zahlung-buchen?invoice=${invoiceId}`)
+}
+
+const downloadPDF = async (invoiceId: number) => {
+  try {
+    const token = localStorage.getItem('token')
+    const response = await axios.get(`${API_URL}/api/invoices/${invoiceId}/pdf`, {
+      headers: { Authorization: `Bearer ${token}` },
+      responseType: 'blob'
+    })
+    
+    // Create a blob URL and trigger download
+    const blob = new Blob([response.data], { type: 'application/pdf' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `Rechnung-${invoiceId}.pdf`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  } catch (err: any) {
+    console.error('Error downloading PDF:', err)
+    let errorMessage = 'Fehler beim Herunterladen der PDF'
+    if (err.response?.status === 404) {
+      errorMessage = 'PDF nicht gefunden'
+    } else if (err.response?.status === 403 || err.response?.status === 401) {
+      errorMessage = 'Keine Berechtigung zum Herunterladen der PDF'
+    } else if (err.response?.data) {
+      errorMessage = err.response.data.error || errorMessage
+    }
+    alert(errorMessage)
+  }
 }
 
 onMounted(() => {
@@ -327,6 +368,13 @@ onMounted(() => {
   color: #065f46;
 }
 
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
 .btn-action {
   padding: 0.5rem 1rem;
   background: #3b82f6;
@@ -337,10 +385,28 @@ onMounted(() => {
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.15s;
+  white-space: nowrap;
 }
 
 .btn-action:hover {
   background: #2563eb;
+}
+
+.btn-action-secondary {
+  padding: 0.5rem 1rem;
+  background: #6b7280;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  white-space: nowrap;
+}
+
+.btn-action-secondary:hover {
+  background: #4b5563;
 }
 
 .btn-primary {
