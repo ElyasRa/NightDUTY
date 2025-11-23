@@ -5,6 +5,7 @@ import FirmenverwaltungView from '../views/FirmenverwaltungView.vue'
 import StundenreportView from '../views/StundenreportView.vue'
 import UebernahmenView from '../views/UebernahmenView.vue'
 import RechnungErstellenView from '../views/RechnungErstellenView.vue'
+import MahnwesenView from '../views/MahnwesenView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -46,6 +47,12 @@ const router = createRouter({
       path: '/rechnung-erstellen',
       name: 'Rechnung erstellen',
       component: RechnungErstellenView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/mahnwesen',
+      name: 'Mahnwesen',
+      component: MahnwesenView,
       meta: { requiresAuth: true }
     }
   ]
