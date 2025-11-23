@@ -9,6 +9,8 @@ import MahnwesenView from '../views/MahnwesenView.vue'
 import OffeneRechnungenView from '../views/OffeneRechnungenView.vue'
 import AlleRechnungenView from '../views/AlleRechnungenView.vue'
 import ZahlungBuchenView from '../views/ZahlungBuchenView.vue'
+import RechnungsversandView from '../views/RechnungsversandView.vue'
+import EinstellungenView from '../views/EinstellungenView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -74,6 +76,18 @@ const router = createRouter({
       path: '/mahnwesen',
       name: 'Mahnwesen',
       component: MahnwesenView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/rechnungsversand',
+      name: 'Rechnungsversand',
+      component: RechnungsversandView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/einstellungen',
+      name: 'Einstellungen',
+      component: EinstellungenView,
       meta: { requiresAuth: true }
     }
   ]

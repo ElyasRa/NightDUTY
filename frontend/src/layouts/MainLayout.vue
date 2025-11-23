@@ -68,6 +68,16 @@
             <span class="nav-text">Rechnung erstellen</span>
           </router-link>
 
+          <!-- Rechnungsversand -->
+          <router-link to="/rechnungsversand" class="nav-item">
+            <div class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span class="nav-text">Rechnungsversand</span>
+          </router-link>
+
           <!-- Offene Rechnungen -->
           <router-link to="/offene-rechnungen" class="nav-item">
             <div class="nav-icon">
@@ -139,6 +149,18 @@
               </svg>
             </div>
             <span class="nav-text">Frühzeitige Übernahme</span>
+          </router-link>
+
+          <!-- Einstellungen -->
+          <router-link to="/einstellungen" class="nav-item">
+            <div class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 1v6m0 6v6M23 12h-6m-6 0H5" stroke="currentColor" stroke-width="2"/>
+                <path d="m19.07 4.93-4.24 4.24m0 5.66 4.24 4.24M4.93 4.93l4.24 4.24m5.66 0 4.24-4.24M4.93 19.07l4.24-4.24" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <span class="nav-text">Einstellungen</span>
           </router-link>
         </div>
 
