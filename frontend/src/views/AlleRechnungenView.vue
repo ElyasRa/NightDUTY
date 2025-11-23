@@ -322,11 +322,24 @@ const getStatusLabel = (status: string): string => {
 const downloadPDF = async (invoiceId: number) => {
   try {
     const token = localStorage.getItem('token')
-    const url = `${API_URL}/api/invoices/${invoiceId}/pdf?token=${token}`
-    window.open(url, '_blank')
-  } catch (err) {
+    const response = await axios.get(`${API_URL}/api/invoices/${invoiceId}/pdf`, {
+      headers: { Authorization: `Bearer ${token}` },
+      responseType: 'blob'
+    })
+    
+    // Create a blob URL and trigger download
+    const blob = new Blob([response.data], { type: 'application/pdf' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `Rechnung_${invoiceId}.pdf`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  } catch (err: any) {
     console.error('Error downloading PDF:', err)
-    alert('Fehler beim Herunterladen des PDFs')
+    error.value = 'Fehler beim Herunterladen des PDFs'
   }
 }
 

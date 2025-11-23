@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import { authenticateToken } from '../middleware/auth'
 import { getHolidaysForState } from '../utils/postalCodeHelper'
 import { generateInvoicePDF } from '../utils/invoicePdfGenerator'
+import jwt from 'jsonwebtoken'
 
 const router = Router()
 const prisma = new PrismaClient()
@@ -231,7 +232,6 @@ router.get('/:id/pdf', async (req, res) => {
       return res.status(401).json({ error: 'Kein Token vorhanden' })
     }
     
-    const jwt = require('jsonwebtoken')
     try {
       jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key')
     } catch (err) {

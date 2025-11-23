@@ -244,8 +244,10 @@ const fetchOpenInvoices = async () => {
     const invoiceIdParam = route.query.invoice
     if (invoiceIdParam) {
       const invoiceId = parseInt(invoiceIdParam as string)
-      formData.value.invoice_id = invoiceId
-      onInvoiceChange()
+      if (!isNaN(invoiceId)) {
+        formData.value.invoice_id = invoiceId
+        onInvoiceChange()
+      }
     }
   } catch (err: any) {
     error.value = err.response?.data?.error || 'Fehler beim Laden der Rechnungen'
