@@ -381,6 +381,8 @@ onMounted(() => {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 50%, #0a0a0a 100%);
 }
 
 .page-header {
@@ -388,14 +390,18 @@ onMounted(() => {
 }
 
 .page-header h1 {
-  color: #111827;
+  color: #ff006e;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   font-size: 1.875rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
 }
 
 .page-header p {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 1rem;
 }
 
@@ -406,13 +412,16 @@ onMounted(() => {
 }
 
 .success-box {
-  background: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
   padding: 3rem;
   text-align: center;
   max-width: 600px;
   width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .success-icon {
@@ -421,7 +430,7 @@ onMounted(() => {
 }
 
 .success-box h2 {
-  color: #111827;
+  color: #ffffff;
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 2rem;
@@ -439,18 +448,19 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   padding: 0.75rem;
-  background: #f9fafb;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0.375rem;
 }
 
 .detail-label {
   font-weight: 500;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .detail-value {
   font-weight: 600;
-  color: #111827;
+  color: #ffffff;
 }
 
 .success-actions {
@@ -461,10 +471,13 @@ onMounted(() => {
 }
 
 .form-container {
-  background: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
   padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .payment-form {
@@ -475,7 +488,7 @@ onMounted(() => {
 .form-section {
   margin-bottom: 2rem;
   padding-bottom: 2rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .form-section:last-of-type {
@@ -483,7 +496,11 @@ onMounted(() => {
 }
 
 .form-section h2 {
-  color: #111827;
+  color: #ff006e;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
@@ -498,7 +515,7 @@ onMounted(() => {
   margin-bottom: 0.5rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .form-group input,
@@ -506,18 +523,26 @@ onMounted(() => {
 .form-group textarea {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0.375rem;
   font-size: 0.875rem;
   transition: all 0.15s;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #ff006e;
+  box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.form-group select option {
+  background: #1e293b;
+  color: #ffffff;
 }
 
 .form-group textarea {
@@ -533,28 +558,31 @@ onMounted(() => {
 .btn-fill {
   margin-top: 0.5rem;
   padding: 0.5rem 0.75rem;
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 0.375rem;
   font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.15s;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .btn-fill:hover {
-  background: #e5e7eb;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border-color: #d946ef;
 }
 
 .invoice-summary {
   margin-top: 1.5rem;
   padding: 1.5rem;
-  background: #f9fafb;
-  border-radius: 0.375rem;
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
 }
 
 .invoice-summary h3 {
-  color: #111827;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 1rem;
   font-weight: 600;
   margin-bottom: 1rem;
@@ -575,34 +603,34 @@ onMounted(() => {
 .summary-item.highlight {
   grid-column: span 2;
   padding: 1rem;
-  background: white;
+  background: rgba(217, 70, 239, 0.1);
   border-radius: 0.375rem;
-  border: 2px solid #3b82f6;
+  border: 1px solid rgba(217, 70, 239, 0.3);
 }
 
 .summary-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .summary-value {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #111827;
+  color: #ffffff;
 }
 
 .summary-item.highlight .summary-value {
   font-size: 1.25rem;
-  color: #3b82f6;
+  color: #d946ef;
 }
 
 .error-message {
   padding: 1rem;
-  background: #fee2e2;
-  border: 1px solid #fecaca;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 0.375rem;
-  color: #dc2626;
+  color: #ef4444;
   font-size: 0.875rem;
   margin-bottom: 1.5rem;
 }
@@ -616,30 +644,32 @@ onMounted(() => {
 
 .btn-primary {
   padding: 0.75rem 1.5rem;
-  background: #3b82f6;
+  background: linear-gradient(135deg, #d946ef 0%, #8b5cf6 100%);
   color: white;
   border: none;
   border-radius: 0.375rem;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.15s;
+  transition: all 0.15s;
+  box-shadow: 0 8px 24px rgba(217, 70, 239, 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(217, 70, 239, 0.4);
 }
 
 .btn-primary:disabled {
-  background: #9ca3af;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
 .btn-secondary {
   padding: 0.75rem 1.5rem;
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 0.375rem;
   font-size: 0.875rem;
   font-weight: 500;
@@ -648,7 +678,8 @@ onMounted(() => {
 }
 
 .btn-secondary:hover {
-  background: #e5e7eb;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
 }
 
 .status-badge {
@@ -660,17 +691,20 @@ onMounted(() => {
 }
 
 .status-open {
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
 }
 
 .status-partial {
-  background: #dbeafe;
-  color: #1e40af;
+  background: rgba(139, 92, 246, 0.2);
+  color: #8b5cf6;
+  border: 1px solid rgba(139, 92, 246, 0.3);
 }
 
 .status-paid {
-  background: #d1fae5;
-  color: #065f46;
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 </style>

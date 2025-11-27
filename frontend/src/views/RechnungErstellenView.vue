@@ -447,26 +447,35 @@ onMounted(() => {
   padding: 2rem;
   max-width: 1000px;
   margin: 0 auto;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 50%, #0a0a0a 100%);
 }
 
 .page-header h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #111827;
+  color: #ff006e;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 0.25rem;
 }
 
 .page-header p {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.875rem;
   margin-bottom: 2rem;
 }
 
 .success-container {
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 3rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .success-box {
@@ -483,20 +492,20 @@ onMounted(() => {
 .success-box h2 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #111827;
+  color: #ffffff;
   margin-bottom: 1rem;
 }
 
 .invoice-number {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #3b82f6;
+  color: #d946ef;
   margin-bottom: 2rem;
 }
 
 .success-details {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 2rem;
@@ -506,7 +515,7 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   padding: 0.75rem 0;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .detail-item:last-child {
@@ -514,12 +523,12 @@ onMounted(() => {
 }
 
 .detail-label {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
   font-weight: 500;
 }
 
 .detail-value {
-  color: #111827;
+  color: #ffffff;
   font-weight: 600;
 }
 
@@ -535,7 +544,7 @@ onMounted(() => {
   justify-content: center;
   gap: 0.75rem;
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #d946ef 0%, #8b5cf6 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -543,11 +552,12 @@ onMounted(() => {
   font-size: 1.125rem;
   cursor: pointer;
   transition: all 0.3s;
+  box-shadow: 0 8px 24px rgba(217, 70, 239, 0.3);
 }
 
 .btn-download:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 12px 32px rgba(217, 70, 239, 0.4);
 }
 
 .btn-download:disabled {
@@ -561,16 +571,19 @@ onMounted(() => {
 }
 
 .form-container {
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .form-section {
   margin-bottom: 3rem;
   padding-bottom: 2rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .form-section:last-of-type {
@@ -580,7 +593,11 @@ onMounted(() => {
 .form-section h2 {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #111827;
+  color: #ff006e;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 1.5rem;
 }
 
@@ -592,7 +609,7 @@ onMounted(() => {
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 0.5rem;
 }
 
@@ -601,19 +618,27 @@ onMounted(() => {
 .form-group textarea {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   font-size: 0.875rem;
   transition: all 0.2s;
   font-family: inherit;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #ff006e;
+  box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.form-group select option {
+  background: #1e293b;
+  color: #ffffff;
 }
 
 .form-row {
@@ -632,18 +657,18 @@ onMounted(() => {
 }
 
 .billing-section.hourly {
-  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-  border: 2px solid #93c5fd;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.4);
 }
 
 .billing-section.per-job {
-  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-  border: 2px solid #6ee7b7;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
 }
 
 .billing-section.flat-rate {
-  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-  border: 2px solid #a5b4fc;
+  background: rgba(217, 70, 239, 0.15);
+  border: 1px solid rgba(217, 70, 239, 0.4);
 }
 
 .billing-icon {
@@ -653,13 +678,13 @@ onMounted(() => {
 .billing-section h3 {
   font-size: 1rem;
   font-weight: 600;
-  color: #111827;
+  color: #ffffff;
   margin: 0;
 }
 
 .billing-section p {
   font-size: 0.875rem;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.7);
   margin: 0.25rem 0 0 0;
 }
 
@@ -668,8 +693,8 @@ onMounted(() => {
 }
 
 .hours-box {
-  background: #f9fafb;
-  border: 2px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 2rem;
   min-height: 120px;
@@ -682,14 +707,14 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 1rem;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .mini-spinner {
   width: 24px;
   height: 24px;
-  border: 3px solid #f3f4f6;
-  border-top-color: #3b82f6;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #d946ef;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -711,7 +736,7 @@ onMounted(() => {
 
 .hours-label {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
   font-weight: 500;
   margin-bottom: 0.5rem;
 }
@@ -719,18 +744,18 @@ onMounted(() => {
 .hours-value {
   font-size: 2rem;
   font-weight: 700;
-  color: #1e40af;
+  color: #d946ef;
   margin-bottom: 0.5rem;
 }
 
 .hours-info {
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .hours-placeholder {
   text-align: center;
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .hours-placeholder svg {
@@ -745,8 +770,8 @@ onMounted(() => {
 }
 
 .job-item {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 1rem;
 }
@@ -765,7 +790,7 @@ onMounted(() => {
 .job-header strong {
   display: block;
   font-size: 0.875rem;
-  color: #111827;
+  color: #ffffff;
 }
 
 .job-price {
@@ -778,14 +803,22 @@ onMounted(() => {
 .job-item input {
   width: 100%;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
   font-size: 0.875rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+}
+
+.job-item input:focus {
+  outline: none;
+  border-color: #ff006e;
+  box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.15);
 }
 
 .summary-box {
-  background: #f9fafb;
-  border: 2px solid #e5e7eb;
+  background: rgba(217, 70, 239, 0.1);
+  border: 1px solid rgba(217, 70, 239, 0.3);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
@@ -796,21 +829,29 @@ onMounted(() => {
   justify-content: space-between;
   padding: 0.75rem 0;
   font-size: 0.875rem;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.summary-row strong {
+  color: #ffffff;
 }
 
 .summary-row.total {
-  border-top: 2px solid #d1d5db;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
   margin-top: 0.5rem;
   padding-top: 1rem;
   font-size: 1.125rem;
-  color: #111827;
+  color: #ffffff;
+}
+
+.summary-row.total strong {
+  color: #d946ef;
 }
 
 .error-message {
-  background: #fee2e2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1.5rem;
@@ -833,13 +874,14 @@ onMounted(() => {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #d946ef 0%, #8b5cf6 100%);
   color: white;
+  box-shadow: 0 8px 24px rgba(217, 70, 239, 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 12px 32px rgba(217, 70, 239, 0.4);
 }
 
 .btn-primary:disabled {
@@ -848,12 +890,13 @@ onMounted(() => {
 }
 
 .btn-secondary {
-  background: white;
-  color: #374151;
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .btn-secondary:hover {
-  background: #f3f4f6;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
 }
 </style>

@@ -277,6 +277,8 @@ function formatAmount(amount: number): string {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 50%, #0a0a0a 100%);
 }
 
 .header {
@@ -286,12 +288,16 @@ function formatAmount(amount: number): string {
 .title {
   font-size: 2rem;
   font-weight: 700;
-  color: #1f2937;
+  color: #ff006e;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 0.5rem;
 }
 
 .subtitle {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 1rem;
 }
 
@@ -299,7 +305,7 @@ function formatAmount(amount: number): string {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .tab {
@@ -307,7 +313,7 @@ function formatAmount(amount: number): string {
   background: none;
   border: none;
   border-bottom: 3px solid transparent;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.5);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
@@ -315,44 +321,48 @@ function formatAmount(amount: number): string {
 }
 
 .tab:hover {
-  color: #3b82f6;
+  color: #d946ef;
 }
 
 .tab.active {
-  color: #3b82f6;
-  border-bottom-color: #3b82f6;
+  color: #d946ef;
+  border-bottom-color: #d946ef;
 }
 
 .alert {
   padding: 1rem;
-  border-radius: 8px;
+  border-radius: 12px;
   margin-bottom: 1.5rem;
   font-weight: 500;
+  backdrop-filter: blur(10px);
 }
 
 .alert-success {
-  background-color: #d1fae5;
-  color: #065f46;
-  border: 1px solid #10b981;
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .alert-error {
-  background-color: #fee2e2;
-  color: #991b1b;
-  border: 1px solid #ef4444;
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .card {
-  background: white;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
   padding: 2rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .step {
   margin-bottom: 2rem;
   padding-bottom: 2rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .step:last-child {
@@ -364,7 +374,11 @@ function formatAmount(amount: number): string {
 .step-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #1f2937;
+  color: #ff006e;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 1rem;
 }
 
@@ -376,7 +390,7 @@ function formatAmount(amount: number): string {
 
 .form-group label {
   font-weight: 500;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 0.5rem;
   font-size: 0.875rem;
 }
@@ -385,18 +399,26 @@ function formatAmount(amount: number): string {
 .input,
 .textarea {
   padding: 0.75rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   font-size: 0.875rem;
   transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
 }
 
 .select:focus,
 .input:focus,
 .textarea:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #ff006e;
+  box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.select option {
+  background: #1e293b;
+  color: #ffffff;
 }
 
 .textarea {
@@ -405,8 +427,8 @@ function formatAmount(amount: number): string {
 }
 
 .info-box {
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1.5rem;
@@ -414,13 +436,13 @@ function formatAmount(amount: number): string {
 
 .info-box p {
   margin: 0;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.8);
   font-size: 0.875rem;
 }
 
 .attachments-info {
-  background: #eff6ff;
-  border: 1px solid #3b82f6;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.3);
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1.5rem;
@@ -428,7 +450,7 @@ function formatAmount(amount: number): string {
 
 .attachments-info h4 {
   margin: 0 0 0.75rem 0;
-  color: #1e40af;
+  color: #d946ef;
   font-size: 1rem;
   font-weight: 600;
 }
@@ -449,14 +471,14 @@ function formatAmount(amount: number): string {
 }
 
 .badge-primary {
-  background: #dbeafe;
-  color: #1e40af;
-  border: 1px solid #3b82f6;
+  background: rgba(217, 70, 239, 0.2);
+  color: #d946ef;
+  border: 1px solid rgba(217, 70, 239, 0.4);
 }
 
 .help-text {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.5);
   margin: 0;
 }
 
@@ -481,13 +503,14 @@ function formatAmount(amount: number): string {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #d946ef 0%, #8b5cf6 100%);
   color: white;
+  box-shadow: 0 8px 24px rgba(217, 70, 239, 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 12px 32px rgba(217, 70, 239, 0.4);
 }
 
 .btn-large {
