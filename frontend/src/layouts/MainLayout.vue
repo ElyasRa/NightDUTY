@@ -411,7 +411,6 @@ function logout() {
   flex-direction: column;
   padding: 1.5rem 0;
   overflow-y: auto;
-  overflow-x: hidden;
 }
 
 .nav-links {
