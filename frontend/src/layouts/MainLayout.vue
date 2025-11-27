@@ -1,5 +1,5 @@
 <template>
-  <div class="layout">
+  <div class="layout" @click="closeAllDropdowns">
     <!-- TOP HEADER -->
     <header class="top-header">
       <div class="header-left">
@@ -7,21 +7,117 @@
         <span class="subtitle">Buchhaltungssystem</span>
       </div>
       <div class="header-right">
-        <button class="notification-btn">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="2"/>
-          </svg>
-          <span class="badge">3</span>
-        </button>
-        <div class="user-menu">
-          <div>
-            <div class="user-name">Admin</div>
-            <div class="user-role">Administrator</div>
+        <!-- Notification Bell -->
+        <div class="notification-wrapper">
+          <button class="notification-btn" @click.stop="toggleNotifications">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <span class="badge">{{ notifications.length }}</span>
+          </button>
+          <!-- Notifications Dropdown -->
+          <div v-if="showNotifications" class="dropdown notifications-dropdown" @click.stop>
+            <div class="dropdown-header">
+              <span>Benachrichtigungen</span>
+              <button class="mark-all-read" @click="markAllAsRead">Alle als gelesen</button>
+            </div>
+            <div class="dropdown-content">
+              <div v-if="notifications.length === 0" class="empty-state">
+                Keine neuen Benachrichtigungen
+              </div>
+              <div v-for="notification in notifications" :key="notification.id" class="notification-item">
+                <div class="notification-icon" :class="notification.type">
+                  <svg v-if="notification.type === 'payment'" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                    <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  <svg v-else-if="notification.type === 'company'" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  <svg v-else viewBox="0 0 24 24" fill="none">
+                    <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div class="notification-text">
+                  <div class="notification-title">{{ notification.title }}</div>
+                  <div class="notification-time">{{ notification.time }}</div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="user-avatar">AD</div>
+        </div>
+        <!-- User Menu -->
+        <div class="user-menu-wrapper">
+          <div class="user-menu" @click.stop="toggleUserMenu">
+            <div>
+              <div class="user-name">Admin</div>
+              <div class="user-role">Administrator</div>
+            </div>
+            <div class="user-avatar">AD</div>
+          </div>
+          <!-- User Menu Dropdown -->
+          <div v-if="showUserMenu" class="dropdown user-dropdown" @click.stop>
+            <div class="dropdown-item disabled">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2"/>
+                <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              <span>Profil</span>
+            </div>
+            <div class="dropdown-item" @click="openPasswordModal">
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              <span>Passwort ändern</span>
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-item logout" @click="logout">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              <span>Abmelden</span>
+            </div>
+          </div>
         </div>
       </div>
     </header>
+
+    <!-- Password Change Modal -->
+    <div v-if="showPasswordModal" class="modal-overlay" @click="closePasswordModal">
+      <div class="modal password-modal" @click.stop>
+        <div class="modal-header">
+          <h2>Passwort ändern</h2>
+          <button @click="closePasswordModal" class="close-btn">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </button>
+        </div>
+        <form @submit.prevent="handlePasswordChange" class="modal-form">
+          <div class="form-group">
+            <label>Aktuelles Passwort</label>
+            <input v-model="passwordForm.currentPassword" type="password" required />
+          </div>
+          <div class="form-group">
+            <label>Neues Passwort</label>
+            <input v-model="passwordForm.newPassword" type="password" required />
+          </div>
+          <div class="form-group">
+            <label>Passwort bestätigen</label>
+            <input v-model="passwordForm.confirmPassword" type="password" required />
+          </div>
+          <div v-if="passwordError" class="error-message">{{ passwordError }}</div>
+          <div v-if="passwordSuccess" class="success-message">{{ passwordSuccess }}</div>
+          <div class="modal-footer">
+            <button type="button" @click="closePasswordModal" class="btn-secondary">Abbrechen</button>
+            <button type="submit" class="btn-primary" :disabled="passwordSaving">
+              {{ passwordSaving ? 'Speichern...' : 'Speichern' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <div class="content-wrapper">
       <!-- LEFT SIDEBAR -->
@@ -189,8 +285,106 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const sidebarCollapsed = ref(false)
 
+// Dropdown states
+const showNotifications = ref(false)
+const showUserMenu = ref(false)
+const showPasswordModal = ref(false)
+
+// Password change form
+const passwordForm = ref({
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: ''
+})
+const passwordError = ref('')
+const passwordSuccess = ref('')
+const passwordSaving = ref(false)
+
+// Mock notifications data
+const notifications = ref([
+  { id: 1, title: 'Rechnung #123 bezahlt', time: 'vor 5 Minuten', type: 'payment' },
+  { id: 2, title: 'Neue Firma angelegt', time: 'vor 1 Stunde', type: 'company' },
+  { id: 3, title: 'Mahnung #45 versendet', time: 'vor 2 Stunden', type: 'info' }
+])
+
+// Timing constants (in milliseconds)
+const API_SIMULATION_DELAY = 1000
+const SUCCESS_MESSAGE_DISPLAY_TIME = 1500
+
 function toggleSidebar() {
   sidebarCollapsed.value = !sidebarCollapsed.value
+}
+
+function toggleNotifications() {
+  showNotifications.value = !showNotifications.value
+  showUserMenu.value = false
+}
+
+function toggleUserMenu() {
+  showUserMenu.value = !showUserMenu.value
+  showNotifications.value = false
+}
+
+function closeAllDropdowns() {
+  showNotifications.value = false
+  showUserMenu.value = false
+}
+
+function markAllAsRead() {
+  notifications.value = []
+}
+
+function openPasswordModal() {
+  showUserMenu.value = false
+  showPasswordModal.value = true
+  passwordForm.value = { currentPassword: '', newPassword: '', confirmPassword: '' }
+  passwordError.value = ''
+  passwordSuccess.value = ''
+}
+
+function closePasswordModal() {
+  showPasswordModal.value = false
+  passwordForm.value = { currentPassword: '', newPassword: '', confirmPassword: '' }
+  passwordError.value = ''
+  passwordSuccess.value = ''
+}
+
+async function handlePasswordChange() {
+  passwordError.value = ''
+  passwordSuccess.value = ''
+
+  if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
+    passwordError.value = 'Die Passwörter stimmen nicht überein'
+    return
+  }
+
+  if (passwordForm.value.newPassword.length < 6) {
+    passwordError.value = 'Das neue Passwort muss mindestens 6 Zeichen lang sein'
+    return
+  }
+
+  passwordSaving.value = true
+
+  try {
+    // Dummy handler - prepare for API call to /api/auth/change-password
+    // const token = localStorage.getItem('token')
+    // await axios.post('/api/auth/change-password', {
+    //   currentPassword: passwordForm.value.currentPassword,
+    //   newPassword: passwordForm.value.newPassword
+    // }, { headers: { Authorization: `Bearer ${token}` } })
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, API_SIMULATION_DELAY))
+    
+    passwordSuccess.value = 'Passwort erfolgreich geändert!'
+    setTimeout(() => {
+      closePasswordModal()
+    }, SUCCESS_MESSAGE_DISPLAY_TIME)
+  } catch {
+    passwordError.value = 'Fehler beim Ändern des Passworts'
+  } finally {
+    passwordSaving.value = false
+  }
 }
 
 function logout() {
@@ -534,5 +728,386 @@ function logout() {
 
 .sidebar-inner::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 0, 110, 0.5);
+}
+
+/* Notification and User Menu Wrappers */
+.notification-wrapper,
+.user-menu-wrapper {
+  position: relative;
+}
+
+/* Dropdown Base Styles */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: #1e293b;
+  border: 1px solid rgba(255, 0, 110, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 0, 110, 0.1);
+  z-index: 200;
+  overflow: hidden;
+  animation: dropdownFadeIn 0.2s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Notifications Dropdown */
+.notifications-dropdown {
+  width: 340px;
+}
+
+.dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-header span {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+}
+
+.mark-all-read {
+  background: none;
+  border: none;
+  color: #ff006e;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.mark-all-read:hover {
+  color: #8338ec;
+}
+
+.dropdown-content {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.875rem;
+}
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.notification-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.notification-icon.payment {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.notification-icon.company {
+  background: rgba(139, 92, 246, 0.2);
+  color: #8b5cf6;
+}
+
+.notification-icon.info {
+  background: rgba(255, 0, 110, 0.2);
+  color: #ff006e;
+}
+
+.notification-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.notification-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.25rem;
+}
+
+.notification-time {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* User Menu Dropdown */
+.user-dropdown {
+  width: 200px;
+  padding: 0.5rem 0;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dropdown-item:hover:not(.disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.dropdown-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dropdown-item.logout {
+  color: #ff6b6b;
+}
+
+.dropdown-item.logout:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.dropdown-item svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0.5rem 0;
+}
+
+/* Password Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 2rem;
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  background: #1e293b;
+  border: 1px solid rgba(255, 0, 110, 0.3);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 0, 110, 0.1);
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-header h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+.close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.close-btn svg {
+  width: 20px;
+  height: 20px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.modal-form {
+  padding: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.5rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #ff006e;
+  box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.error-message {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.success-message {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #10b981;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-secondary {
+  padding: 0.75rem 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.btn-primary {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #ffffff;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(255, 0, 110, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+  box-shadow: 0 6px 16px rgba(255, 0, 110, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Dropdown scrollbar */
+.dropdown-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dropdown-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 0, 110, 0.3);
+  border-radius: 10px;
 }
 </style>
