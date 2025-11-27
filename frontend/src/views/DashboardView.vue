@@ -353,17 +353,21 @@ onMounted(() => {
 }
 
 .stat-card {
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: rgba(20, 20, 20, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 0, 110, 0.2);
   border-radius: 12px;
   padding: 1.25rem;
   position: relative;
   transition: all 0.3s;
+  box-shadow: 0 8px 32px 0 rgba(255, 0, 110, 0.1);
 }
 
 .stat-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 32px rgba(255, 0, 110, 0.2);
   transform: translateY(-2px);
+  border-color: rgba(255, 0, 110, 0.4);
 }
 
 .stat-icon {
@@ -383,19 +387,19 @@ onMounted(() => {
 }
 
 .stat-icon.blue {
-  background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
 }
 
 .stat-icon.orange {
-  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
 }
 
 .stat-icon.green {
-  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
 }
 
 .stat-icon.pink {
-  background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
 }
 
 .stat-mini-icon {
@@ -407,13 +411,13 @@ onMounted(() => {
 }
 
 .stat-label {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.875rem;
   margin-bottom: 0.5rem;
 }
 
 .stat-value {
-  color: #111827;
+  color: white;
   font-size: 1.75rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
@@ -424,19 +428,19 @@ onMounted(() => {
 }
 
 .stat-trend.up {
-  color: #10b981;
+  color: #34d399;
 }
 
 .stat-trend.down {
-  color: #ef4444;
+  color: #ff6b6b;
 }
 
 .stat-trend.down-red {
-  color: #ef4444;
+  color: #ff6b6b;
 }
 
 .stat-info {
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 /* Content Grid */
@@ -448,10 +452,13 @@ onMounted(() => {
 }
 
 .card {
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: rgba(20, 20, 20, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 0, 110, 0.2);
   border-radius: 12px;
   padding: 1.5rem;
+  box-shadow: 0 8px 32px 0 rgba(255, 0, 110, 0.1);
 }
 
 .chart-card {
@@ -459,7 +466,7 @@ onMounted(() => {
 }
 
 .card-title {
-  color: #111827;
+  color: white;
   font-size: 1rem;
   font-weight: 700;
   margin-bottom: 1.25rem;
@@ -476,9 +483,9 @@ onMounted(() => {
   align-items: center;
   gap: 0.875rem;
   padding: 1rem;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
   transition: all 0.2s;
   font-size: 0.875rem;
@@ -487,24 +494,25 @@ onMounted(() => {
 }
 
 .quick-btn.blue-bg {
-  background: rgba(59, 130, 246, 0.08);
+  background: rgba(255, 0, 110, 0.08);
 }
 
 .quick-btn.green-bg {
-  background: rgba(16, 185, 129, 0.08);
+  background: rgba(131, 56, 236, 0.08);
 }
 
 .quick-btn.purple-bg {
-  background: rgba(139, 92, 246, 0.08);
+  background: rgba(131, 56, 236, 0.08);
 }
 
 .quick-btn.orange-bg {
-  background: rgba(245, 158, 11, 0.08);
+  background: rgba(255, 0, 110, 0.08);
 }
 
 .quick-btn:hover {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 16px rgba(255, 0, 110, 0.2);
   transform: translateX(2px);
+  border-color: rgba(255, 0, 110, 0.3);
 }
 
 .quick-icon {
@@ -524,24 +532,24 @@ onMounted(() => {
 }
 
 .quick-icon.blue {
-  background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
 }
 
 .quick-icon.green {
-  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
 }
 
 .quick-icon.purple {
-  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
 }
 
 .quick-icon.orange {
-  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
 }
 
 .quick-badge {
   margin-left: auto;
-  background: #ef4444;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
   color: white;
   font-size: 0.7rem;
   font-weight: 600;
@@ -552,14 +560,14 @@ onMounted(() => {
 .activity-loading, .activity-empty {
   text-align: center;
   padding: 2rem;
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .spinner-small {
   width: 2rem;
   height: 2rem;
-  border: 3px solid #e5e7eb;
-  border-top-color: #3b82f6;
+  border: 3px solid rgba(255, 0, 110, 0.2);
+  border-top-color: #ff006e;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 0.5rem;
@@ -579,13 +587,15 @@ onMounted(() => {
   display: flex;
   gap: 0.875rem;
   padding: 0.875rem;
-  background: #f9fafb;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 8px;
   transition: all 0.2s;
 }
 
 .activity-item:hover {
-  background: #f3f4f6;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 0, 110, 0.2);
 }
 
 .activity-icon {
@@ -605,19 +615,19 @@ onMounted(() => {
 }
 
 .activity-icon.blue {
-  background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
 }
 
 .activity-icon.green {
-  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
 }
 
 .activity-icon.purple {
-  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
 }
 
 .activity-icon.orange {
-  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
 }
 
 .activity-content {
@@ -625,14 +635,14 @@ onMounted(() => {
 }
 
 .activity-title {
-  color: #111827;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 0.875rem;
   font-weight: 500;
   margin-bottom: 0.25rem;
 }
 
 .activity-time {
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.4);
   font-size: 0.75rem;
 }
 
@@ -642,7 +652,8 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  background: #f9fafb;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 8px;
 }
 
@@ -652,7 +663,7 @@ onMounted(() => {
 }
 
 .chart-placeholder p {
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.4);
   font-size: 0.875rem;
 }
 
