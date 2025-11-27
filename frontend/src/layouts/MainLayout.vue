@@ -32,7 +32,8 @@
           </svg>
         </button>
 
-        <div class="nav-links">
+        <div class="sidebar-inner">
+          <div class="nav-links">
           <!-- Dashboard -->
           <router-link to="/dashboard" class="nav-item">
             <div class="nav-icon">
@@ -170,6 +171,7 @@
           </svg>
           <span class="nav-text">Abmelden</span>
         </button>
+        </div>
       </nav>
 
       <!-- MAIN CONTENT -->
@@ -339,7 +341,7 @@ function logout() {
 
 /* SIDEBAR */
 .sidebar {
-  width: 280px;
+  width: 300px;
   background: rgba(20, 20, 20, 0.7);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -350,8 +352,8 @@ function logout() {
   bottom: 0;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 0;
-  overflow-y: auto;
+  padding: 0;
+  overflow: visible;
   transition: width 0.3s ease;
 }
 
@@ -401,6 +403,14 @@ function logout() {
   height: 18px;
   color: white;
   transition: transform 0.3s, color 0.3s;
+}
+
+.sidebar-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 0;
+  overflow-y: auto;
 }
 
 .nav-links {
@@ -498,7 +508,7 @@ function logout() {
 /* MAIN CONTENT */
 .main-content {
   flex: 1;
-  margin-left: 280px;
+  margin-left: 300px;
   min-height: calc(100vh - 70px);
   background: transparent;
   transition: margin-left 0.3s ease;
@@ -509,20 +519,20 @@ function logout() {
 }
 
 /* Scrollbar */
-.sidebar::-webkit-scrollbar {
+.sidebar-inner::-webkit-scrollbar {
   width: 6px;
 }
 
-.sidebar::-webkit-scrollbar-track {
+.sidebar-inner::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.2);
 }
 
-.sidebar::-webkit-scrollbar-thumb {
+.sidebar-inner::-webkit-scrollbar-thumb {
   background: rgba(255, 0, 110, 0.3);
   border-radius: 10px;
 }
 
-.sidebar::-webkit-scrollbar-thumb:hover {
+.sidebar-inner::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 0, 110, 0.5);
 }
 </style>
