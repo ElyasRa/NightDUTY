@@ -359,6 +359,8 @@ onMounted(() => {
 <style scoped>
 .page-container {
   padding: 2rem;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 50%, #0a0a0a 100%);
 }
 
 .page-header {
@@ -366,14 +368,18 @@ onMounted(() => {
 }
 
 .page-header h1 {
-  color: #111827;
+  color: #ff006e;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   font-size: 1.875rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
 }
 
 .page-header p {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 1rem;
 }
 
@@ -382,9 +388,12 @@ onMounted(() => {
   gap: 1rem;
   margin-bottom: 1.5rem;
   padding: 1rem;
-  background: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .filter-group {
@@ -397,36 +406,51 @@ onMounted(() => {
 .filter-group label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .search-input, .filter-select {
   padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0.375rem;
   font-size: 0.875rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .search-input:focus, .filter-select:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #ff006e;
+  box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.filter-select option {
+  background: #1e293b;
+  color: #ffffff;
 }
 
 .btn-refresh {
   padding: 0.5rem 1rem;
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 0.375rem;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   align-self: flex-end;
   transition: all 0.15s;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .btn-refresh:hover {
-  background: #e5e7eb;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border-color: #d946ef;
 }
 
 .loading-state, .error-state, .empty-state {
@@ -437,8 +461,8 @@ onMounted(() => {
 .spinner {
   width: 3rem;
   height: 3rem;
-  border: 4px solid #e5e7eb;
-  border-top-color: #3b82f6;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #d946ef;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 1rem;
@@ -451,26 +475,29 @@ onMounted(() => {
 .empty-icon {
   width: 4rem;
   height: 4rem;
-  color: #d1d5db;
+  color: rgba(255, 255, 255, 0.3);
   margin: 0 auto 1rem;
 }
 
 .empty-state h2 {
-  color: #111827;
+  color: #ffffff;
   font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
 
 .empty-state p {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .table-container {
-  background: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
   overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .data-table {
@@ -479,7 +506,7 @@ onMounted(() => {
 }
 
 .data-table thead {
-  background: #f9fafb;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .data-table th {
@@ -487,23 +514,24 @@ onMounted(() => {
   text-align: left;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.7);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .data-table tbody tr {
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   transition: background-color 0.15s;
 }
 
 .data-table tbody tr:hover {
-  background: #f9fafb;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .data-table td {
   padding: 1rem;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.8);
   font-size: 0.875rem;
 }
 
@@ -517,6 +545,7 @@ onMounted(() => {
 
 .font-medium {
   font-weight: 500;
+  color: #ffffff;
 }
 
 .font-bold {
@@ -532,18 +561,21 @@ onMounted(() => {
 }
 
 .status-open {
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
 }
 
 .status-partial {
-  background: #dbeafe;
-  color: #1e40af;
+  background: rgba(139, 92, 246, 0.2);
+  color: #8b5cf6;
+  border: 1px solid rgba(139, 92, 246, 0.3);
 }
 
 .status-paid {
-  background: #d1fae5;
-  color: #065f46;
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .action-buttons {
@@ -567,25 +599,27 @@ onMounted(() => {
 
 .btn-primary {
   padding: 0.75rem 1.5rem;
-  background: #3b82f6;
+  background: linear-gradient(135deg, #d946ef 0%, #8b5cf6 100%);
   color: white;
   border: none;
   border-radius: 0.375rem;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.15s;
+  transition: all 0.15s;
+  box-shadow: 0 8px 24px rgba(217, 70, 239, 0.3);
 }
 
 .btn-primary:hover {
-  background: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(217, 70, 239, 0.4);
 }
 
 .btn-secondary {
   padding: 0.75rem 1.5rem;
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 0.375rem;
   font-size: 0.875rem;
   font-weight: 500;
@@ -594,12 +628,17 @@ onMounted(() => {
 }
 
 .btn-secondary:hover {
-  background: #e5e7eb;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
 }
 
 .error-state p {
   color: #ef4444;
   margin-bottom: 1rem;
+}
+
+.loading-state p {
+  color: rgba(255, 255, 255, 0.6);
 }
 
 /* Modal Styles */
@@ -609,22 +648,26 @@ onMounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: 2rem;
+  backdrop-filter: blur(4px);
 }
 
 .modal-content {
-  background: white;
-  border-radius: 0.5rem;
+  background: rgba(20, 20, 20, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 0, 110, 0.2);
+  border-radius: 16px;
   max-width: 900px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
 }
 
 .modal-header {
@@ -632,27 +675,33 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .modal-header h2 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #111827;
+  color: #ff006e;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .btn-close {
   padding: 0.5rem;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.1);
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: #6b7280;
-  transition: color 0.15s;
+  color: rgba(255, 255, 255, 0.6);
+  border-radius: 8px;
+  transition: all 0.15s;
 }
 
 .btn-close:hover {
-  color: #111827;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
 }
 
 .modal-body {
@@ -670,7 +719,7 @@ onMounted(() => {
 .detail-section h3 {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #111827;
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 1rem;
 }
 
@@ -689,12 +738,12 @@ onMounted(() => {
 .detail-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .detail-value {
   font-size: 0.875rem;
-  color: #111827;
+  color: #ffffff;
 }
 
 .payments-table {
@@ -704,7 +753,7 @@ onMounted(() => {
 }
 
 .payments-table thead {
-  background: #f9fafb;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .payments-table th {
@@ -712,15 +761,15 @@ onMounted(() => {
   text-align: left;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.7);
   text-transform: uppercase;
 }
 
 .payments-table td {
   padding: 0.75rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 0.875rem;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .modal-footer {
@@ -728,6 +777,6 @@ onMounted(() => {
   gap: 1rem;
   justify-content: flex-end;
   padding: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 </style>

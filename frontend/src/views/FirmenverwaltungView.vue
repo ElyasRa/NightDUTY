@@ -573,6 +573,8 @@ onMounted(() => {
   padding: 2rem;
   max-width: 1600px;
   margin: 0 auto;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 50%, #0a0a0a 100%);
 }
 
 .page-header {
@@ -585,12 +587,16 @@ onMounted(() => {
 .page-header h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #111827;
+  color: #ff006e;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 0.25rem;
 }
 
 .page-header p {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.875rem;
 }
 
@@ -598,7 +604,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #d946ef 0%, #8b5cf6 100%);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -606,11 +612,12 @@ onMounted(() => {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
+  box-shadow: 0 8px 24px rgba(217, 70, 239, 0.3);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 12px 32px rgba(217, 70, 239, 0.4);
 }
 
 .btn-primary svg {
@@ -619,8 +626,10 @@ onMounted(() => {
 }
 
 .filter-section {
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
@@ -628,6 +637,7 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .search-box {
@@ -643,22 +653,29 @@ onMounted(() => {
   left: 1rem;
   width: 20px;
   height: 20px;
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .search-box input {
   width: 100%;
   padding: 0.75rem 1rem 0.75rem 3rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   font-size: 0.875rem;
   transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+}
+
+.search-box input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .search-box input:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #ff006e;
+  box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.15);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .clear-btn {
@@ -668,7 +685,7 @@ onMounted(() => {
   height: 28px;
   border-radius: 6px;
   border: none;
-  background: #f3f4f6;
+  background: rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -677,40 +694,43 @@ onMounted(() => {
 }
 
 .clear-btn:hover {
-  background: #e5e7eb;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .clear-btn svg {
   position: static;
   width: 14px;
   height: 14px;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .filter-info {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
   font-weight: 500;
 }
 
 .companies-list {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
   overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .loading, .empty {
   text-align: center;
   padding: 4rem 2rem;
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid #f3f4f6;
-  border-top-color: #3b82f6;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #d946ef;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin: 0 auto 1rem;
@@ -724,7 +744,7 @@ onMounted(() => {
   width: 64px;
   height: 64px;
   margin: 0 auto 1rem;
-  color: #d1d5db;
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .table-container {
@@ -737,8 +757,8 @@ onMounted(() => {
 }
 
 .companies-table thead {
-  background: #f9fafb;
-  border-bottom: 2px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .companies-table th {
@@ -746,7 +766,7 @@ onMounted(() => {
   padding: 1rem 1.5rem;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.7);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -758,7 +778,7 @@ onMounted(() => {
 }
 
 .companies-table th.sortable:hover {
-  color: #3b82f6;
+  color: #d946ef;
 }
 
 .companies-table th svg {
@@ -775,28 +795,29 @@ onMounted(() => {
 }
 
 .companies-table tbody tr {
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   transition: all 0.2s;
 }
 
 .companies-table tbody tr:hover {
-  background: #f9fafb;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .companies-table td {
   padding: 1.25rem 1.5rem;
   font-size: 0.875rem;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .customer-number {
   font-family: 'Courier New', monospace;
   font-weight: 600;
-  color: #3b82f6;
-  background: #dbeafe;
+  color: #d946ef;
+  background: rgba(217, 70, 239, 0.2);
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   font-size: 0.75rem;
+  border: 1px solid rgba(217, 70, 239, 0.3);
 }
 
 .company-name {
@@ -813,7 +834,7 @@ onMounted(() => {
   width: 42px;
   height: 42px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #d946ef 0%, #8b5cf6 100%);
   color: white;
   display: flex;
   align-items: center;
@@ -826,7 +847,7 @@ onMounted(() => {
 .postal-code {
   display: block;
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.5);
   font-weight: 400;
   margin-top: 0.125rem;
 }
@@ -837,16 +858,17 @@ onMounted(() => {
 
 .contact-name {
   font-weight: 500;
+  color: #ffffff;
 }
 
 .contact-phone {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.5);
   margin-top: 0.125rem;
 }
 
 .text-muted {
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .badge {
@@ -866,18 +888,27 @@ onMounted(() => {
 }
 
 .badge-blue {
-  background: #dbeafe;
-  color: #1e40af;
+  background: rgba(139, 92, 246, 0.2);
+  color: #8b5cf6;
+  border: 1px solid rgba(139, 92, 246, 0.3);
 }
 
 .badge-green {
-  background: #d1fae5;
-  color: #065f46;
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .badge-gray {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.badge-purple {
+  background: rgba(217, 70, 239, 0.2);
+  color: #d946ef;
+  border: 1px solid rgba(217, 70, 239, 0.3);
 }
 
 .prices-cell {
@@ -886,10 +917,11 @@ onMounted(() => {
 
 .price-info {
   font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .price-info strong {
-  color: #1e40af;
+  color: #d946ef;
   font-size: 1rem;
 }
 
@@ -901,7 +933,7 @@ onMounted(() => {
 
 .price-item {
   font-size: 0.75rem;
-  color: #065f46;
+  color: #10b981;
   font-weight: 500;
 }
 
@@ -920,8 +952,8 @@ onMounted(() => {
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  border: 1px solid #d1d5db;
-  background: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -930,19 +962,19 @@ onMounted(() => {
 }
 
 .btn-icon:hover {
-  background: #f3f4f6;
-  border-color: #3b82f6;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #d946ef;
 }
 
 .btn-icon.btn-danger:hover {
-  background: #fee2e2;
+  background: rgba(239, 68, 68, 0.2);
   border-color: #ef4444;
 }
 
 .btn-icon svg {
   width: 18px;
   height: 18px;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .btn-icon.btn-danger svg {
@@ -955,22 +987,26 @@ onMounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: 2rem;
+  backdrop-filter: blur(4px);
 }
 
 .modal {
-  background: white;
+  background: rgba(20, 20, 20, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 0, 110, 0.2);
   border-radius: 16px;
   width: 100%;
   max-width: 800px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
 }
 
 .modal-header {
@@ -978,17 +1014,22 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 2rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   position: sticky;
   top: 0;
-  background: white;
+  background: rgba(20, 20, 20, 0.95);
+  backdrop-filter: blur(20px);
   z-index: 10;
 }
 
 .modal-header h2 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #111827;
+  color: #ff006e;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .close-btn {
@@ -996,7 +1037,7 @@ onMounted(() => {
   height: 36px;
   border-radius: 8px;
   border: none;
-  background: #f3f4f6;
+  background: rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1005,13 +1046,13 @@ onMounted(() => {
 }
 
 .close-btn:hover {
-  background: #e5e7eb;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .close-btn svg {
   width: 20px;
   height: 20px;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .modal-form {
@@ -1021,7 +1062,7 @@ onMounted(() => {
 .form-section {
   margin-bottom: 2rem;
   padding-bottom: 2rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .form-section:last-of-type {
@@ -1031,7 +1072,11 @@ onMounted(() => {
 .form-section h3 {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #111827;
+  color: #ff006e;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 1.5rem;
 }
 
@@ -1043,7 +1088,7 @@ onMounted(() => {
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 0.5rem;
 }
 
@@ -1051,24 +1096,32 @@ onMounted(() => {
 .form-group select {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   font-size: 0.875rem;
   transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
 }
 
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #ff006e;
+  box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.form-group select option {
+  background: #1e293b;
+  color: #ffffff;
 }
 
 .form-group small {
   display: block;
   margin-top: 0.375rem;
   font-size: 0.75rem;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .form-row {
@@ -1080,7 +1133,8 @@ onMounted(() => {
 .billing-details {
   margin-top: 1rem;
   padding: 1.5rem;
-  background: #f9fafb;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
 }
 
@@ -1095,26 +1149,50 @@ onMounted(() => {
 .day-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .time-row input {
   padding: 0.5rem 0.75rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
   font-size: 0.875rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+}
+
+.time-row input:focus {
+  outline: none;
+  border-color: #ff006e;
+  box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.15);
 }
 
 .time-row span {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.5);
   text-align: center;
 }
 
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  accent-color: #d946ef;
+}
+
+.checkbox-label span {
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .error-message {
-  background: #fee2e2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
   padding: 1rem 1.25rem;
   border-radius: 10px;
   font-size: 0.875rem;
@@ -1126,28 +1204,26 @@ onMounted(() => {
   justify-content: flex-end;
   gap: 1rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   position: sticky;
   bottom: 0;
-  background: white;
+  background: rgba(20, 20, 20, 0.95);
+  backdrop-filter: blur(20px);
 }
 
 .btn-secondary {
   padding: 0.75rem 1.5rem;
-  border: 1px solid #e5e7eb;
-  background: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.8);
   transition: all 0.2s;
 }
 
 .btn-secondary:hover {
-  background: #f3f4f6;
-}
-.badge-purple {
-  background: rgba(139, 92, 246, 0.1);
-  color: #8b5cf6;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
 }
 </style>
