@@ -265,7 +265,9 @@ const calculatedSubtotal = computed(() => {
   let subtotal = 0
   
   if (selectedCompany.value.billing_type === 'hourly') {
-    subtotal = (formData.value.total_hours || 0) * (selectedCompany.value.hourly_rate || 0)
+    // Use regular + holiday hours for standard hourly rate (not total_hours to avoid double counting takeover)
+    const standardHours = (formData.value.regular_hours || 0) + (formData.value.holiday_hours || 0)
+    subtotal = standardHours * (selectedCompany.value.hourly_rate || 0)
   } else if (selectedCompany.value.billing_type === 'per_job') {
     subtotal = (
       (formData.value.count_pkw || 0) * (selectedCompany.value.price_pkw || 0) +
@@ -365,8 +367,10 @@ async function createInvoice() {
     }
     
     if (selectedCompany.value.billing_type === 'hourly') {
+      // Send standard hours (regular + holiday) as total_hours, not including takeover
+      const standardHours = (formData.value.regular_hours || 0) + (formData.value.holiday_hours || 0)
       Object.assign(payload, {
-        total_hours: formData.value.total_hours,
+        total_hours: standardHours,
         hourly_rate: selectedCompany.value.hourly_rate
       })
     } else if (selectedCompany.value.billing_type === 'per_job') {
