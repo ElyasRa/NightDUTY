@@ -268,6 +268,7 @@ async function saveSettings() {
 .title {
   font-size: 2rem;
   font-weight: 700;
+  color: #ff006e;
   background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -314,7 +315,8 @@ async function saveSettings() {
 .card-title {
   font-size: 1.5rem;
   font-weight: 600;
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  color: #ff006e;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

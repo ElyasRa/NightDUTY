@@ -420,6 +420,7 @@ function closeHistoryDialog() {
 .page-header h1 {
   font-size: 2rem;
   font-weight: 700;
+  color: #ff006e;
   background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -729,6 +730,7 @@ function closeHistoryDialog() {
 .modal-header h2 {
   font-size: 1.25rem;
   font-weight: 700;
+  color: #ff006e;
   background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

@@ -19,6 +19,7 @@ import MainLayout from '../layouts/MainLayout.vue'
 }
 
 h1 {
+  color: #ff006e;
   background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
