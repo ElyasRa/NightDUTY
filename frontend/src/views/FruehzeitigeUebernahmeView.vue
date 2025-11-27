@@ -422,9 +422,9 @@ onMounted(() => {
   height: 18px;
 }
 
-/* FILTER SECTION - Glassmorphism */
+/* FILTER SECTION - Dark Glassmorphism (Slate background for better visibility) */
 .filter-card {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(30, 41, 59, 0.7);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -456,7 +456,7 @@ onMounted(() => {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   font-size: 0.875rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(15, 23, 42, 0.8);
   color: #ffffff;
   cursor: pointer;
   transition: all 0.2s;
@@ -467,7 +467,7 @@ onMounted(() => {
   outline: none;
   border-color: #ff006e;
   box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.15);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(30, 41, 59, 0.9);
 }
 
 .filter-item select option {
