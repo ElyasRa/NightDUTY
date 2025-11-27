@@ -387,15 +387,15 @@ onMounted(() => {
 }
 
 .stat-icon.blue {
-  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  background: linear-gradient(135deg, #8338ec 0%, #3b82f6 100%);
 }
 
 .stat-icon.orange {
-  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  background: linear-gradient(135deg, #ff006e 0%, #f59e0b 100%);
 }
 
 .stat-icon.green {
-  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  background: linear-gradient(135deg, #10b981 0%, #8338ec 100%);
 }
 
 .stat-icon.pink {
@@ -536,15 +536,15 @@ onMounted(() => {
 }
 
 .quick-icon.green {
-  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  background: linear-gradient(135deg, #10b981 0%, #8338ec 100%);
 }
 
 .quick-icon.purple {
-  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  background: linear-gradient(135deg, #8338ec 0%, #a855f7 100%);
 }
 
 .quick-icon.orange {
-  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  background: linear-gradient(135deg, #ff006e 0%, #f59e0b 100%);
 }
 
 .quick-badge {
@@ -615,19 +615,19 @@ onMounted(() => {
 }
 
 .activity-icon.blue {
-  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  background: linear-gradient(135deg, #8338ec 0%, #3b82f6 100%);
 }
 
 .activity-icon.green {
-  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  background: linear-gradient(135deg, #10b981 0%, #8338ec 100%);
 }
 
 .activity-icon.purple {
-  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  background: linear-gradient(135deg, #8338ec 0%, #a855f7 100%);
 }
 
 .activity-icon.orange {
-  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  background: linear-gradient(135deg, #ff006e 0%, #f59e0b 100%);
 }
 
 .activity-content {
