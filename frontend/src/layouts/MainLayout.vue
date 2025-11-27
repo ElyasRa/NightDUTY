@@ -339,7 +339,7 @@ function logout() {
 
 /* SIDEBAR */
 .sidebar {
-  width: 240px;
+  width: 280px;
   background: rgba(20, 20, 20, 0.7);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -372,17 +372,17 @@ function logout() {
 .toggle-btn {
   position: absolute;
   top: 1rem;
-  right: -12px;
-  width: 24px;
-  height: 24px;
+  right: -16px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 0, 110, 0.3);
+  border: 2px solid #ff006e;
   background: rgba(20, 20, 20, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 12px rgba(255, 0, 110, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
   z-index: 10;
   transition: all 0.3s;
 }
@@ -397,9 +397,9 @@ function logout() {
 }
 
 .toggle-btn svg {
-  width: 14px;
-  height: 14px;
-  color: rgba(255, 255, 255, 0.7);
+  width: 18px;
+  height: 18px;
+  color: white;
   transition: transform 0.3s, color 0.3s;
 }
 
@@ -498,7 +498,7 @@ function logout() {
 /* MAIN CONTENT */
 .main-content {
   flex: 1;
-  margin-left: 240px;
+  margin-left: 280px;
   min-height: calc(100vh - 70px);
   background: transparent;
   transition: margin-left 0.3s ease;
