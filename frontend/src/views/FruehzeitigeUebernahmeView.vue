@@ -14,15 +14,22 @@ import MainLayout from '../layouts/MainLayout.vue'
 <style scoped>
 .page-container {
   padding: 2rem;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 50%, #0a0a0a 100%);
 }
+
 h1 {
-  color: #111827;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 1rem;
   font-size: 1.75rem;
   font-weight: 700;
 }
+
 p {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 1rem;
 }
 </style>
