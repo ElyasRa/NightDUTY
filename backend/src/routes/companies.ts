@@ -50,6 +50,9 @@ router.post('/', authenticateToken, async (req, res) => {
       if (data.price_oilspill) data.price_oilspill = parseFloat(data.price_oilspill)
     }
     
+    // Parse early_takeover_price
+    if (data.early_takeover_price) data.early_takeover_price = parseFloat(data.early_takeover_price)
+    
     // ID entfernen bei CREATE
     delete data.id
 
@@ -100,6 +103,9 @@ router.put('/:id', authenticateToken, async (req, res) => {
       // Stundenlohn auf null setzen
       data.hourly_rate = null
     }
+    
+    // Parse early_takeover_price
+    if (data.early_takeover_price) data.early_takeover_price = parseFloat(data.early_takeover_price)
     
     // ID aus data entfernen
     delete data.id

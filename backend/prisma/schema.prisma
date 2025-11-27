@@ -57,6 +57,7 @@ model Company {
   price_oilspill  Float?
   service_fee     Float?
   monthly_rate    Float?
+  early_takeover_price Float?
   
   created_at      DateTime    @default(now())
   updated_at      DateTime    @updatedAt

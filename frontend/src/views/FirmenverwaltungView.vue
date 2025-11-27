@@ -267,6 +267,12 @@
                   <input v-model.number="formData.monthly_rate" type="number" step="0.01" min="0" required />
                 </div>
               </div>
+
+              <div v-if="formData.billing_type" class="form-group" style="margin-top: 1.5rem;">
+                <label>Preis pro Stunde (Frühzeitige Übernahme) (€)</label>
+                <input v-model.number="formData.early_takeover_price" type="number" step="0.01" min="0" />
+                <small>Preis für Stunden bei frühzeitiger Übernahme (außerhalb der Pauschale)</small>
+              </div>
             </div>
 
             <!-- Öffnungszeiten -->
@@ -342,6 +348,7 @@ interface Company {
   price_pkw?: number
   price_lkw?: number
   price_oilspill?: number
+  early_takeover_price?: number
   holiday_takeover?: boolean
   holiday_schedule_ref?: string
   [key: string]: any
@@ -384,6 +391,7 @@ const formData = ref<any>({
   price_oilspill: null,
   service_fee: null,
   monthly_rate: null,
+  early_takeover_price: null,
   monday_start: '',
   monday_end: '',
   tuesday_start: '',
@@ -482,6 +490,7 @@ function openCreateModal() {
     price_oilspill: null,
     service_fee: null,
     monthly_rate: null,
+    early_takeover_price: null,
     monday_start: '',
     monday_end: '',
     tuesday_start: '',
