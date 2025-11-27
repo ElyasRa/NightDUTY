@@ -4,6 +4,7 @@ import DashboardView from '../views/DashboardView.vue'
 import FirmenverwaltungView from '../views/FirmenverwaltungView.vue'
 import StundenreportView from '../views/StundenreportView.vue'
 import UebernahmenView from '../views/UebernahmenView.vue'
+import FruehzeitigeUebernahmeView from '../views/FruehzeitigeUebernahmeView.vue'
 import RechnungErstellenView from '../views/RechnungErstellenView.vue'
 import MahnwesenView from '../views/MahnwesenView.vue'
 import OffeneRechnungenView from '../views/OffeneRechnungenView.vue'
@@ -46,6 +47,12 @@ const router = createRouter({
       path: '/uebernahmen',
       name: 'Übernahmen',
       component: UebernahmenView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/fruehzeitige-uebernahme',
+      name: 'Frühzeitige Übernahme',
+      component: FruehzeitigeUebernahmeView,
       meta: { requiresAuth: true }
     },
     {
