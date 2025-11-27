@@ -301,11 +301,21 @@ const passwordSuccess = ref('')
 const passwordSaving = ref(false)
 
 // Mock notifications data
-const notifications = ref([
+const mockNotifications = [
   { id: 1, title: 'Rechnung #123 bezahlt', time: 'vor 5 Minuten', type: 'payment' },
   { id: 2, title: 'Neue Firma angelegt', time: 'vor 1 Stunde', type: 'company' },
   { id: 3, title: 'Mahnung #45 versendet', time: 'vor 2 Stunden', type: 'info' }
-])
+]
+
+// Initialize notifications based on localStorage flag
+function getInitialNotifications() {
+  try {
+    return localStorage.getItem('notificationsRead') ? [] : mockNotifications
+  } catch {
+    return mockNotifications
+  }
+}
+const notifications = ref(getInitialNotifications())
 
 // Timing constants (in milliseconds)
 const API_SIMULATION_DELAY = 1000
@@ -332,6 +342,11 @@ function closeAllDropdowns() {
 
 function markAllAsRead() {
   notifications.value = []
+  try {
+    localStorage.setItem('notificationsRead', 'true')
+  } catch {
+    // Ignore localStorage errors (e.g., quota exceeded, disabled)
+  }
 }
 
 function openPasswordModal() {
