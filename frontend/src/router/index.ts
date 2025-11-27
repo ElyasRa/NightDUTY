@@ -12,6 +12,7 @@ import AlleRechnungenView from '../views/AlleRechnungenView.vue'
 import ZahlungBuchenView from '../views/ZahlungBuchenView.vue'
 import RechnungsversandView from '../views/RechnungsversandView.vue'
 import EinstellungenView from '../views/EinstellungenView.vue'
+import BenutzerverwaltungView from '../views/BenutzerverwaltungView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -95,6 +96,12 @@ const router = createRouter({
       path: '/einstellungen',
       name: 'Einstellungen',
       component: EinstellungenView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/benutzerverwaltung',
+      name: 'Benutzerverwaltung',
+      component: BenutzerverwaltungView,
       meta: { requiresAuth: true }
     }
   ]
