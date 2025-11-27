@@ -409,6 +409,8 @@ function closeHistoryDialog() {
   padding: 2rem;
   max-width: 1400px;
   margin: 0 auto;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 50%, #0a0a0a 100%);
 }
 
 .page-header {
@@ -418,12 +420,16 @@ function closeHistoryDialog() {
 .page-header h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #111827;
+  color: #ff006e;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0 0 0.5rem 0;
 }
 
 .page-header p {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 1rem;
   margin: 0;
 }
@@ -435,13 +441,14 @@ function closeHistoryDialog() {
   justify-content: center;
   padding: 4rem;
   gap: 1rem;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid #e5e7eb;
-  border-top-color: #3b82f6;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #ff006e;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -451,23 +458,27 @@ function closeHistoryDialog() {
 }
 
 .error-box {
-  background: #fee2e2;
-  border: 1px solid #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 12px;
   padding: 1.5rem;
   text-align: center;
+  backdrop-filter: blur(10px);
 }
 
 .error-box p {
-  color: #991b1b;
+  color: #ff4444;
   margin: 0 0 1rem 0;
 }
 
 .content-box {
-  background: white;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
   padding: 2rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .empty-state {
@@ -483,12 +494,12 @@ function closeHistoryDialog() {
 .empty-state h2 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #111827;
+  color: #ffffff;
   margin: 0 0 0.5rem 0;
 }
 
 .empty-state p {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
   margin: 0;
 }
 
@@ -500,10 +511,11 @@ function closeHistoryDialog() {
 }
 
 .stat-card {
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
   padding: 1.5rem;
   border-radius: 12px;
   color: white;
+  box-shadow: 0 8px 24px rgba(255, 0, 110, 0.3);
 }
 
 .stat-label {
@@ -527,29 +539,29 @@ function closeHistoryDialog() {
 }
 
 .invoice-table th {
-  background: #f9fafb;
+  background: rgba(255, 255, 255, 0.05);
   padding: 1rem;
   text-align: left;
   font-weight: 600;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 0.875rem;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .invoice-table td {
   padding: 1rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   font-size: 0.875rem;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .invoice-table tr:hover {
-  background: #f9fafb;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .amount {
   font-weight: 600;
-  color: #111827;
+  color: #ffffff;
 }
 
 .overdue-badge {
@@ -561,18 +573,21 @@ function closeHistoryDialog() {
 }
 
 .overdue-badge.mild {
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
 }
 
 .overdue-badge.warning {
-  background: #fed7aa;
-  color: #9a3412;
+  background: rgba(249, 115, 22, 0.2);
+  color: #f97316;
+  border: 1px solid rgba(249, 115, 22, 0.3);
 }
 
 .overdue-badge.severe {
-  background: #fee2e2;
-  color: #991b1b;
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .dunning-badge {
@@ -584,23 +599,27 @@ function closeHistoryDialog() {
 }
 
 .dunning-badge.level-0 {
-  background: #e5e7eb;
-  color: #374151;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .dunning-badge.level-1 {
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
 }
 
 .dunning-badge.level-2 {
-  background: #fed7aa;
-  color: #9a3412;
+  background: rgba(249, 115, 22, 0.2);
+  color: #f97316;
+  border: 1px solid rgba(249, 115, 22, 0.3);
 }
 
 .dunning-badge.level-3 {
-  background: #fee2e2;
-  color: #991b1b;
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .action-buttons {
@@ -620,45 +639,51 @@ function closeHistoryDialog() {
 }
 
 .btn-action.btn-level-1 {
-  background: #fbbf24;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
 }
 
 .btn-action.btn-level-1:hover {
-  background: #f59e0b;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(251, 191, 36, 0.4);
 }
 
 .btn-action.btn-level-2 {
-  background: #f97316;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
 }
 
 .btn-action.btn-level-2:hover {
-  background: #ea580c;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(249, 115, 22, 0.4);
 }
 
 .btn-action.btn-level-3 {
-  background: #ef4444;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 .btn-action.btn-level-3:hover {
-  background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
 }
 
 .btn-view {
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  background: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
   font-weight: 600;
   font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.2s;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .btn-view:hover {
-  background: #f9fafb;
-  border-color: #3b82f6;
-  color: #3b82f6;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #ff006e;
+  color: #ff006e;
 }
 
 /* Modal Styles */
@@ -668,22 +693,26 @@ function closeHistoryDialog() {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: 1rem;
+  backdrop-filter: blur(4px);
 }
 
 .modal-content {
-  background: white;
-  border-radius: 12px;
+  background: rgba(20, 20, 20, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 0, 110, 0.2);
+  border-radius: 16px;
   max-width: 600px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
 }
 
 .modal-content.history-modal {
@@ -695,13 +724,17 @@ function closeHistoryDialog() {
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .modal-header h2 {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #111827;
+  color: #ff006e;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0;
 }
 
@@ -710,17 +743,17 @@ function closeHistoryDialog() {
   height: 32px;
   border-radius: 8px;
   border: none;
-  background: #f3f4f6;
+  background: rgba(255, 255, 255, 0.1);
   font-size: 1.5rem;
   cursor: pointer;
   transition: all 0.2s;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
   line-height: 1;
 }
 
 .close-btn:hover {
-  background: #e5e7eb;
-  color: #111827;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
 }
 
 .modal-body {
@@ -728,9 +761,10 @@ function closeHistoryDialog() {
 }
 
 .invoice-info {
-  background: #f9fafb;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 1rem;
-  border-radius: 8px;
+  border-radius: 12px;
   margin-bottom: 1.5rem;
 }
 
@@ -741,17 +775,17 @@ function closeHistoryDialog() {
 }
 
 .info-row:not(:last-child) {
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .info-row .label {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.875rem;
 }
 
 .info-row .value {
   font-weight: 600;
-  color: #111827;
+  color: #ffffff;
   font-size: 0.875rem;
 }
 
@@ -769,26 +803,29 @@ function closeHistoryDialog() {
 
 .form-group label {
   font-weight: 600;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 0.875rem;
 }
 
 .form-group input {
   padding: 0.75rem;
-  border: 1px solid #d1d5db;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   font-size: 0.875rem;
+  color: #ffffff;
   transition: all 0.2s;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #ff006e;
+  box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.15);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .hint {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.5);
   font-size: 0.75rem;
 }
 
@@ -797,7 +834,7 @@ function closeHistoryDialog() {
   justify-content: flex-end;
   gap: 1rem;
   padding: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .btn-primary, .btn-secondary {
@@ -811,13 +848,14 @@ function closeHistoryDialog() {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
   color: white;
+  box-shadow: 0 8px 24px rgba(255, 0, 110, 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 12px 32px rgba(255, 0, 110, 0.4);
 }
 
 .btn-primary:disabled {
@@ -826,12 +864,14 @@ function closeHistoryDialog() {
 }
 
 .btn-secondary {
-  background: #f3f4f6;
-  color: #374151;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .btn-secondary:hover {
-  background: #e5e7eb;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
 }
 
 .history-list {
@@ -841,9 +881,10 @@ function closeHistoryDialog() {
 }
 
 .history-item {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .history-header {
@@ -862,22 +903,25 @@ function closeHistoryDialog() {
 }
 
 .dunning-level-badge.level-1 {
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
 }
 
 .dunning-level-badge.level-2 {
-  background: #fed7aa;
-  color: #9a3412;
+  background: rgba(249, 115, 22, 0.2);
+  color: #f97316;
+  border: 1px solid rgba(249, 115, 22, 0.3);
 }
 
 .dunning-level-badge.level-3 {
-  background: #fee2e2;
-  color: #991b1b;
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .history-date {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.5);
   font-size: 0.875rem;
 }
 
@@ -891,10 +935,10 @@ function closeHistoryDialog() {
   display: flex;
   justify-content: space-between;
   font-size: 0.875rem;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .detail-row strong {
-  color: #111827;
+  color: #ffffff;
 }
 </style>
