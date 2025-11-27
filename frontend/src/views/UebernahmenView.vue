@@ -3,7 +3,7 @@
     <div class="page-container">
       <div class="page-header">
         <div>
-          <h1>Frühzeitige Übernahmen</h1>
+          <h1>⚡ Frühzeitige Übernahmen</h1>
           <p>Zusätzliche Übernahmezeiten außerhalb der regulären Zeiten</p>
         </div>
         <button @click="openCreateModal" class="btn-primary">
@@ -15,7 +15,7 @@
       </div>
 
       <!-- SUCHFILTER -->
-      <div class="filter-section">
+      <div class="filter-card">
         <div class="filter-grid">
           <div class="filter-item">
             <label>Firma</label>
@@ -65,13 +65,20 @@
           <div class="spinner"></div>
           Lade Übernahmen...
         </div>
-        <div v-else-if="filteredTakeovers.length === 0" class="empty">
-          <svg viewBox="0 0 24 24" fill="none">
-            <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
-            <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2"/>
-          </svg>
-          <p v-if="activeFiltersCount > 0">Keine Übernahmen für die ausgewählten Filter gefunden</p>
-          <p v-else>Keine Übernahmen vorhanden</p>
+        <div v-else-if="filteredTakeovers.length === 0" class="empty-state">
+          <div class="empty-icon">
+            <svg viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+              <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <h2>Keine Übernahmen vorhanden</h2>
+          <p v-if="activeFiltersCount > 0" class="empty-description">
+            Keine Übernahmen für die ausgewählten Filter gefunden
+          </p>
+          <p v-else class="empty-description">
+            Klicken Sie auf "Neue Übernahme", um eine frühzeitige Übernahme hinzuzufügen.
+          </p>
         </div>
         <div v-else v-for="takeover in filteredTakeovers" :key="takeover.id" class="takeover-card">
           <div class="takeover-header">
@@ -356,6 +363,8 @@ onMounted(() => {
   padding: 2rem;
   max-width: 1400px;
   margin: 0 auto;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 50%, #0a0a0a 100%);
 }
 
 .page-header {
@@ -368,12 +377,15 @@ onMounted(() => {
 .page-header h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #111827;
-  margin-bottom: 0.25rem;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
 }
 
 .page-header p {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.875rem;
 }
 
@@ -381,7 +393,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -389,11 +401,18 @@ onMounted(() => {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
+  box-shadow: 0 8px 24px rgba(255, 0, 110, 0.3);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 12px 32px rgba(255, 0, 110, 0.4);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .btn-primary svg {
@@ -401,13 +420,16 @@ onMounted(() => {
   height: 18px;
 }
 
-/* FILTER SECTION */
-.filter-section {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+/* FILTER SECTION - Dark Glassmorphism */
+.filter-card {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .filter-grid {
@@ -421,7 +443,7 @@ onMounted(() => {
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 0.5rem;
 }
 
@@ -429,17 +451,26 @@ onMounted(() => {
 .filter-item input {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
   font-size: 0.875rem;
+  background: rgba(15, 23, 42, 0.8);
+  color: #ffffff;
+  cursor: pointer;
   transition: all 0.2s;
 }
 
 .filter-item select:focus,
 .filter-item input:focus {
   outline: none;
-  border-color: #f59e0b;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+  border-color: #ff006e;
+  box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.15);
+  background: rgba(30, 41, 59, 0.9);
+}
+
+.filter-item select option {
+  background: #1e293b;
+  color: #ffffff;
 }
 
 .filter-actions {
@@ -453,7 +484,7 @@ onMounted(() => {
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
@@ -461,23 +492,26 @@ onMounted(() => {
 }
 
 .btn-filter {
-  background: #3b82f6;
+  background: linear-gradient(135deg, #d946ef 0%, #8b5cf6 100%);
   color: white;
   border: none;
+  box-shadow: 0 4px 16px rgba(217, 70, 239, 0.3);
 }
 
 .btn-filter:hover {
-  background: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(217, 70, 239, 0.4);
 }
 
 .btn-reset {
-  background: white;
-  color: #6b7280;
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .btn-reset:hover {
-  background: #f3f4f6;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .btn-filter svg,
@@ -489,37 +523,39 @@ onMounted(() => {
 .active-filters {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .filter-badge {
   display: inline-block;
-  background: #dbeafe;
-  color: #1e40af;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #a78bfa;
   padding: 0.375rem 0.75rem;
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 600;
 }
 
+/* Takeovers Grid */
 .takeovers-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 1.5rem;
 }
 
-.loading, .empty {
+.loading {
   grid-column: 1 / -1;
   text-align: center;
   padding: 4rem 2rem;
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid #f3f4f6;
-  border-top-color: #f59e0b;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #ff006e;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin: 0 auto 1rem;
@@ -529,24 +565,70 @@ onMounted(() => {
   to { transform: rotate(360deg); }
 }
 
-.empty svg {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 1rem;
-  color: #d1d5db;
+.empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
 }
 
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 0, 110, 0.15) 0%, rgba(131, 56, 236, 0.15) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.empty-icon svg {
+  width: 40px;
+  height: 40px;
+  color: #ff006e;
+}
+
+.empty-state h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.75rem;
+}
+
+.empty-description {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  max-width: 400px;
+}
+
+/* Takeover Cards */
 .takeover-card {
-  background: white;
-  border: 2px solid #fbbf24;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 0, 110, 0.3);
+  border-radius: 16px;
   padding: 1.5rem;
   transition: all 0.3s;
 }
 
 .takeover-card:hover {
-  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.15);
+  box-shadow: 0 8px 32px rgba(255, 0, 110, 0.2);
   transform: translateY(-2px);
+  border-color: rgba(255, 0, 110, 0.5);
 }
 
 .takeover-header {
@@ -557,8 +639,9 @@ onMounted(() => {
 }
 
 .company-badge {
-  background: #fef3c7;
-  color: #92400e;
+  background: linear-gradient(135deg, rgba(255, 0, 110, 0.15) 0%, rgba(131, 56, 236, 0.15) 100%);
+  border: 1px solid rgba(255, 0, 110, 0.3);
+  color: #ff006e;
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-weight: 600;
@@ -569,8 +652,8 @@ onMounted(() => {
   width: 32px;
   height: 32px;
   border-radius: 6px;
-  border: 1px solid #fee2e2;
-  background: white;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -579,7 +662,7 @@ onMounted(() => {
 }
 
 .btn-delete-small:hover {
-  background: #fee2e2;
+  background: rgba(239, 68, 68, 0.2);
   border-color: #ef4444;
 }
 
@@ -601,36 +684,40 @@ onMounted(() => {
   align-items: center;
   gap: 0.75rem;
   font-size: 0.875rem;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .date-range svg, .time-range svg {
   width: 18px;
   height: 18px;
-  color: #f59e0b;
+  color: #ff006e;
   flex-shrink: 0;
 }
 
 .takeover-notes {
-  background: #fef3c7;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.3);
   padding: 0.75rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.875rem;
-  color: #78350f;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .takeover-notes strong {
   display: block;
   margin-bottom: 0.25rem;
+  color: #a78bfa;
 }
 
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -639,13 +726,16 @@ onMounted(() => {
 }
 
 .modal {
-  background: white;
+  background: rgba(30, 41, 59, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   width: 100%;
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
 }
 
 .modal-header {
@@ -653,21 +743,24 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 2rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .modal-header h2 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #111827;
+  background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .close-btn {
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  border: none;
-  background: #f3f4f6;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -676,13 +769,14 @@ onMounted(() => {
 }
 
 .close-btn:hover {
-  background: #e5e7eb;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .close-btn svg {
   width: 20px;
   height: 20px;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .modal-form {
@@ -697,7 +791,7 @@ onMounted(() => {
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 0.5rem;
 }
 
@@ -706,9 +800,11 @@ onMounted(() => {
 .form-group textarea {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
   font-size: 0.875rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
   transition: all 0.2s;
 }
 
@@ -716,8 +812,19 @@ onMounted(() => {
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #f59e0b;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+  border-color: #ff006e;
+  box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.form-group select option {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
 }
 
 .form-row {
@@ -727,9 +834,9 @@ onMounted(() => {
 }
 
 .error-message {
-  background: #fee2e2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
   padding: 1rem 1.25rem;
   border-radius: 10px;
   font-size: 0.875rem;
@@ -741,21 +848,60 @@ onMounted(() => {
   justify-content: flex-end;
   gap: 1rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .btn-secondary {
   padding: 0.75rem 1.5rem;
-  border: 1px solid #e5e7eb;
-  background: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.8);
   transition: all 0.2s;
 }
 
 .btn-secondary:hover {
-  background: #f3f4f6;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page-container {
+    padding: 1rem;
+  }
+
+  .page-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-actions {
+    flex-direction: column;
+  }
+
+  .takeovers-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .empty-icon {
+    width: 64px;
+    height: 64px;
+  }
+
+  .empty-icon svg {
+    width: 32px;
+    height: 32px;
+  }
 }
 </style>
