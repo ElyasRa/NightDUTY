@@ -6,6 +6,18 @@ import { authenticateToken, AuthRequest } from '../middleware/auth'
 const router = Router()
 const prisma = new PrismaClient()
 
+// Valid roles for role validation
+const VALID_ROLES = ['user', 'admin']
+
+// Helper function to validate and parse ID
+function parseUserId(id: string): number | null {
+  const parsed = parseInt(id, 10)
+  if (isNaN(parsed) || parsed <= 0) {
+    return null
+  }
+  return parsed
+}
+
 // Get all users (protected)
 router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
@@ -40,6 +52,12 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ error: 'Benutzername und Passwort sind erforderlich' })
     }
 
+    // Validate role if provided
+    const userRole = role || 'user'
+    if (!VALID_ROLES.includes(userRole)) {
+      return res.status(400).json({ error: 'Ungültige Rolle. Erlaubt: user, admin' })
+    }
+
     const existingUser = await prisma.user.findUnique({ where: { username } })
     if (existingUser) {
       return res.status(400).json({ error: 'Benutzer existiert bereits' })
@@ -50,7 +68,7 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
       data: { 
         username, 
         password: hashedPassword, 
-        role: role || 'user' 
+        role: userRole 
       },
       select: {
         id: true,
@@ -76,6 +94,12 @@ router.put('/:id', authenticateToken, async (req: AuthRequest, res: Response) =>
     }
 
     const { id } = req.params
+    const userId = parseUserId(id)
+    
+    if (userId === null) {
+      return res.status(400).json({ error: 'Ungültige Benutzer-ID' })
+    }
+
     const { password, role } = req.body
 
     const updateData: { password?: string; role?: string } = {}
@@ -85,6 +109,10 @@ router.put('/:id', authenticateToken, async (req: AuthRequest, res: Response) =>
     }
 
     if (role) {
+      // Validate role
+      if (!VALID_ROLES.includes(role)) {
+        return res.status(400).json({ error: 'Ungültige Rolle. Erlaubt: user, admin' })
+      }
       updateData.role = role
     }
 
@@ -93,7 +121,7 @@ router.put('/:id', authenticateToken, async (req: AuthRequest, res: Response) =>
     }
 
     const user = await prisma.user.update({
-      where: { id: parseInt(id) },
+      where: { id: userId },
       data: updateData,
       select: {
         id: true,
@@ -123,7 +151,11 @@ router.delete('/:id', authenticateToken, async (req: AuthRequest, res: Response)
     }
 
     const { id } = req.params
-    const userId = parseInt(id)
+    const userId = parseUserId(id)
+    
+    if (userId === null) {
+      return res.status(400).json({ error: 'Ungültige Benutzer-ID' })
+    }
 
     // Prevent deleting own account
     if (req.user?.id === userId) {
