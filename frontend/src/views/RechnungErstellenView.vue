@@ -97,10 +97,21 @@
                 </div>
                 <div v-else-if="formData.total_hours > 0" class="hours-result">
                   <div class="hours-icon">📊</div>
-                  <div>
+                  <div class="hours-details">
                     <div class="hours-label">Automatisch berechnete Stunden</div>
                     <div class="hours-value">{{ formData.total_hours.toFixed(2) }} Stunden</div>
-                    <div class="hours-info">Inkl. Bereitschaftszeiten, Übernahmen und Feiertage</div>
+                    <div class="hours-breakdown">
+                      <div class="hours-breakdown-item">
+                        <span class="breakdown-label">Reguläre Stunden:</span>
+                        <span class="breakdown-value">{{ (formData.regular_hours + formData.holiday_hours).toFixed(2) }} h</span>
+                        <span class="breakdown-rate" v-if="selectedCompany.hourly_rate">@ {{ selectedCompany.hourly_rate.toFixed(2) }} €</span>
+                      </div>
+                      <div v-if="formData.takeover_hours > 0" class="hours-breakdown-item takeover">
+                        <span class="breakdown-label">Frühzeitige Übernahme:</span>
+                        <span class="breakdown-value">{{ formData.takeover_hours.toFixed(2) }} h</span>
+                        <span class="breakdown-rate" v-if="selectedCompany.early_takeover_price">@ {{ selectedCompany.early_takeover_price.toFixed(2) }} €</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div v-else class="hours-placeholder">
@@ -221,6 +232,7 @@ interface Company {
   price_oilspill?: number
   service_fee?: number
   monthly_rate?: number
+  early_takeover_price?: number
 }
 
 const companies = ref<Company[]>([])
@@ -238,6 +250,9 @@ const formData = ref({
   invoice_date: new Date().toISOString().split('T')[0],
   due_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
   total_hours: 0,
+  regular_hours: 0,
+  takeover_hours: 0,
+  holiday_hours: 0,
   count_pkw: 0,
   count_lkw: 0,
   count_oilspill: 0,
@@ -247,18 +262,26 @@ const formData = ref({
 const calculatedSubtotal = computed(() => {
   if (!selectedCompany.value) return 0
   
+  let subtotal = 0
+  
   if (selectedCompany.value.billing_type === 'hourly') {
-    return (formData.value.total_hours || 0) * (selectedCompany.value.hourly_rate || 0)
+    subtotal = (formData.value.total_hours || 0) * (selectedCompany.value.hourly_rate || 0)
   } else if (selectedCompany.value.billing_type === 'per_job') {
-    return (
+    subtotal = (
       (formData.value.count_pkw || 0) * (selectedCompany.value.price_pkw || 0) +
       (formData.value.count_lkw || 0) * (selectedCompany.value.price_lkw || 0) +
       (formData.value.count_oilspill || 0) * (selectedCompany.value.price_oilspill || 0)
     )
   } else if (selectedCompany.value.billing_type === 'flat_rate') {
-    return selectedCompany.value.monthly_rate || 0
+    subtotal = selectedCompany.value.monthly_rate || 0
   }
-  return 0
+  
+  // Add takeover hours to subtotal if applicable
+  if (formData.value.takeover_hours > 0 && selectedCompany.value.early_takeover_price) {
+    subtotal += formData.value.takeover_hours * selectedCompany.value.early_takeover_price
+  }
+  
+  return subtotal
 })
 
 const calculatedTax = computed(() => calculatedSubtotal.value * 0.19)
@@ -280,6 +303,9 @@ async function fetchCompanies() {
 function onCompanyChange() {
   selectedCompany.value = companies.value.find(c => c.id === formData.value.company_id) || null
   formData.value.total_hours = 0
+  formData.value.regular_hours = 0
+  formData.value.takeover_hours = 0
+  formData.value.holiday_hours = 0
   formData.value.count_pkw = 0
   formData.value.count_lkw = 0
   formData.value.count_oilspill = 0
@@ -308,6 +334,9 @@ async function calculateHours() {
     )
     
     formData.value.total_hours = response.data.total_hours
+    formData.value.regular_hours = response.data.regular_hours
+    formData.value.takeover_hours = response.data.takeover_hours
+    formData.value.holiday_hours = response.data.holiday_hours
   } catch (err) {
     console.error('Error calculating hours:', err)
     error.value = 'Fehler beim Berechnen der Stunden'
@@ -362,10 +391,10 @@ async function createInvoice() {
       })
     }
     
-    // Service-Pauschale hinzufügen (falls vorhanden)
-    if (selectedCompany.value.service_fee) {
+    // Takeover hours hinzufügen (falls vorhanden)
+    if (formData.value.takeover_hours > 0) {
       Object.assign(payload, {
-        service_fee: selectedCompany.value.service_fee
+        takeover_hours: formData.value.takeover_hours
       })
     }
     
@@ -425,6 +454,9 @@ function createAnother() {
     invoice_date: new Date().toISOString().split('T')[0],
     due_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     total_hours: 0,
+    regular_hours: 0,
+    takeover_hours: 0,
+    holiday_hours: 0,
     count_pkw: 0,
     count_lkw: 0,
     count_oilspill: 0,
@@ -751,6 +783,50 @@ onMounted(() => {
 .hours-info {
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.5);
+}
+
+.hours-details {
+  flex: 1;
+}
+
+.hours-breakdown {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hours-breakdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 0.25rem 0;
+}
+
+.hours-breakdown-item.takeover {
+  color: #f97316;
+}
+
+.breakdown-label {
+  min-width: 150px;
+}
+
+.breakdown-value {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.hours-breakdown-item.takeover .breakdown-value {
+  color: #f97316;
+}
+
+.breakdown-rate {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.125rem 0.5rem;
+  border-radius: 4px;
 }
 
 .hours-placeholder {
