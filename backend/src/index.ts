@@ -8,6 +8,7 @@ import invoicesRoutes from './routes/invoices'
 import dunningRoutes from './routes/dunning'
 import settingsRoutes from './routes/settings'
 import emailRoutes from './routes/email'
+import usersRoutes from './routes/users'
 
 const app = express()
 
@@ -23,6 +24,7 @@ app.use('/api/invoices', invoicesRoutes)
 app.use('/api/dunning', dunningRoutes)
 app.use('/api/settings', settingsRoutes)
 app.use('/api/email', emailRoutes)
+app.use('/api/users', usersRoutes)
 
 // Static files
 app.use(express.static('public'))
