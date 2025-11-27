@@ -51,7 +51,7 @@ router.post('/', authenticateToken, async (req, res) => {
     }
     
     // Parse early_takeover_price
-    if (data.early_takeover_price) data.early_takeover_price = parseFloat(data.early_takeover_price)
+    if (data.early_takeover_price !== undefined && data.early_takeover_price !== null) data.early_takeover_price = parseFloat(data.early_takeover_price)
     
     // ID entfernen bei CREATE
     delete data.id
@@ -105,7 +105,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
     }
     
     // Parse early_takeover_price
-    if (data.early_takeover_price) data.early_takeover_price = parseFloat(data.early_takeover_price)
+    if (data.early_takeover_price !== undefined && data.early_takeover_price !== null) data.early_takeover_price = parseFloat(data.early_takeover_price)
     
     // ID aus data entfernen
     delete data.id
