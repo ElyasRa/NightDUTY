@@ -12,7 +12,7 @@ const prisma = new PrismaClient()
 // POST /api/email/send-invoice - Send invoice via email with attachments
 router.post('/send-invoice', authenticateToken, async (req, res) => {
   try {
-    const { invoiceId, subject, body } = req.body
+    const { invoiceId, subject, body, recipientEmail, attachHoursReport } = req.body
     
     if (!invoiceId || !subject || !body) {
       return res.status(400).json({ error: 'invoiceId, subject und body sind erforderlich' })
@@ -30,11 +30,14 @@ router.post('/send-invoice', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Rechnung nicht gefunden' })
     }
     
-    if (!invoice.company.email) {
-      return res.status(400).json({ error: 'Firma hat keine E-Mail-Adresse' })
+    // Use provided recipientEmail or fall back to company email
+    const emailTo = recipientEmail || invoice.company.email
+    
+    if (!emailTo) {
+      return res.status(400).json({ error: 'Keine E-Mail-Adresse angegeben' })
     }
     
-    console.log(`📧 Sende Rechnung ${invoice.invoice_number} an ${invoice.company.email}`)
+    console.log(`📧 Sende Rechnung ${invoice.invoice_number} an ${emailTo}`)
     
     // Generate invoice PDF as buffer
     const invoicePdfData = {
@@ -74,158 +77,167 @@ router.post('/send-invoice', authenticateToken, async (req, res) => {
     const invoicePdfBuffer = await generateInvoicePDFBuffer(invoicePdfData)
     console.log('✅ Invoice PDF generated')
     
-    // Generate Stundenreport PDF as buffer
-    const startDate = new Date(invoice.period_start)
-    const endDate = new Date(invoice.period_end)
-    const year = startDate.getFullYear()
-    
-    const holidays = invoice.company.federal_state 
-      ? getHolidaysForState(invoice.company.federal_state, year)
-      : []
-    
-    const holidayDates = new Set(holidays.map(h => h.date))
-    const holidayMap = new Map(holidays.map(h => [h.date, h.name]))
-    
-    // Get takeovers for the period
-    const takeovers = await prisma.earlyTakeover.findMany({
-      where: {
-        company_id: invoice.company_id,
-        start_date: { lte: endDate },
-        end_date: { gte: startDate }
+    // Build attachments array - always include invoice
+    const attachments: Array<{ filename: string; content: Buffer }> = [
+      {
+        filename: `Rechnung_${invoice.invoice_number}.pdf`,
+        content: invoicePdfBuffer
       }
-    })
+    ]
     
-    console.log(`✅ Found ${takeovers.length} takeovers for report`)
+    // Only generate and attach Stundenreport if attachHoursReport is true (default to true for backward compatibility)
+    const shouldAttachHoursReport = attachHoursReport === undefined ? true : Boolean(attachHoursReport)
     
-    // Generate all entries for the period
-    const entries = []
-    let totalHours = 0
+    if (shouldAttachHoursReport) {
+      // Generate Stundenreport PDF as buffer
+      const startDate = new Date(invoice.period_start)
+      const endDate = new Date(invoice.period_end)
+      const year = startDate.getFullYear()
     
-    const currentDate = new Date(startDate)
-    
-    while (currentDate <= endDate) {
-      const dateStr = currentDate.toISOString().split('T')[0]
-      const dayOfWeek = currentDate.getDay()
+      const holidays = invoice.company.federal_state 
+        ? getHolidaysForState(invoice.company.federal_state, year)
+        : []
       
-      const weekdays = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag']
-      const weekdayName = weekdays[dayOfWeek]
+      const holidayDates = new Set(holidays.map(h => h.date))
+      const holidayMap = new Map(holidays.map(h => [h.date, h.name]))
       
-      const isHoliday = holidayDates.has(dateStr)
-      
-      const takeover = takeovers.find(t => {
-        const tStart = new Date(t.start_date).toISOString().split('T')[0]
-        const tEnd = new Date(t.end_date).toISOString().split('T')[0]
-        return dateStr >= tStart && dateStr <= tEnd
+      // Get takeovers for the period
+      const takeovers = await prisma.earlyTakeover.findMany({
+        where: {
+          company_id: invoice.company_id,
+          start_date: { lte: endDate },
+          end_date: { gte: startDate }
+        }
       })
       
-      let startTime = null
-      let endTime = null
-      let isTakeover = false
-      let takeoverNotes = null
+      console.log(`✅ Found ${takeovers.length} takeovers for report`)
       
-      if (takeover) {
-        startTime = takeover.start_time
-        endTime = takeover.end_time
-        isTakeover = true
-        takeoverNotes = takeover.notes || 'Frühzeitige Übernahme'
-      } else if (isHoliday) {
-        startTime = invoice.company.sunday_start
-        endTime = invoice.company.sunday_end
-      } else {
-        switch (dayOfWeek) {
-          case 1: startTime = invoice.company.monday_start; endTime = invoice.company.monday_end; break
-          case 2: startTime = invoice.company.tuesday_start; endTime = invoice.company.tuesday_end; break
-          case 3: startTime = invoice.company.wednesday_start; endTime = invoice.company.wednesday_end; break
-          case 4: startTime = invoice.company.thursday_start; endTime = invoice.company.thursday_end; break
-          case 5: startTime = invoice.company.friday_start; endTime = invoice.company.friday_end; break
-          case 6: startTime = invoice.company.saturday_start; endTime = invoice.company.saturday_end; break
-          case 0: startTime = invoice.company.sunday_start; endTime = invoice.company.sunday_end; break
-        }
-      }
+      // Generate all entries for the period
+      const entries = []
+      let totalHours = 0
       
-      if (startTime && endTime) {
-        const [startH, startM] = startTime.split(':').map(Number)
-        const [endH, endM] = endTime.split(':').map(Number)
+      const currentDate = new Date(startDate)
+      
+      while (currentDate <= endDate) {
+        const dateStr = currentDate.toISOString().split('T')[0]
+        const dayOfWeek = currentDate.getDay()
         
-        let startMinutes = startH * 60 + startM
-        let endMinutes = endH * 60 + endM
+        const weekdays = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag']
+        const weekdayName = weekdays[dayOfWeek]
         
-        if (endMinutes < startMinutes) {
-          endMinutes += 24 * 60
-        }
+        const isHoliday = holidayDates.has(dateStr)
         
-        const workMinutes = endMinutes - startMinutes
-        const hours = workMinutes / 60
-        
-        const day = currentDate.getDate()
-        const month = currentDate.getMonth() + 1
-        const yearNum = currentDate.getFullYear()
-        
-        entries.push({
-          date: `${day.toString().padStart(2, '0')}.${month.toString().padStart(2, '0')}.${yearNum}`,
-          weekday: weekdayName,
-          start_time: startTime,
-          end_time: endTime,
-          hours: hours,
-          is_holiday: isHoliday && !isTakeover,
-          is_takeover: isTakeover,
-          holiday_name: isHoliday && !isTakeover ? holidayMap.get(dateStr) : undefined,
-          takeover_notes: isTakeover ? takeoverNotes : undefined
+        const takeover = takeovers.find(t => {
+          const tStart = new Date(t.start_date).toISOString().split('T')[0]
+          const tEnd = new Date(t.end_date).toISOString().split('T')[0]
+          return dateStr >= tStart && dateStr <= tEnd
         })
         
-        totalHours += hours
+        let startTime = null
+        let endTime = null
+        let isTakeover = false
+        let takeoverNotes = null
+        
+        if (takeover) {
+          startTime = takeover.start_time
+          endTime = takeover.end_time
+          isTakeover = true
+          takeoverNotes = takeover.notes || 'Frühzeitige Übernahme'
+        } else if (isHoliday) {
+          startTime = invoice.company.sunday_start
+          endTime = invoice.company.sunday_end
+        } else {
+          switch (dayOfWeek) {
+            case 1: startTime = invoice.company.monday_start; endTime = invoice.company.monday_end; break
+            case 2: startTime = invoice.company.tuesday_start; endTime = invoice.company.tuesday_end; break
+            case 3: startTime = invoice.company.wednesday_start; endTime = invoice.company.wednesday_end; break
+            case 4: startTime = invoice.company.thursday_start; endTime = invoice.company.thursday_end; break
+            case 5: startTime = invoice.company.friday_start; endTime = invoice.company.friday_end; break
+            case 6: startTime = invoice.company.saturday_start; endTime = invoice.company.saturday_end; break
+            case 0: startTime = invoice.company.sunday_start; endTime = invoice.company.sunday_end; break
+          }
+        }
+        
+        if (startTime && endTime) {
+          const [startH, startM] = startTime.split(':').map(Number)
+          const [endH, endM] = endTime.split(':').map(Number)
+          
+          let startMinutes = startH * 60 + startM
+          let endMinutes = endH * 60 + endM
+          
+          if (endMinutes < startMinutes) {
+            endMinutes += 24 * 60
+          }
+          
+          const workMinutes = endMinutes - startMinutes
+          const hours = workMinutes / 60
+          
+          const day = currentDate.getDate()
+          const month = currentDate.getMonth() + 1
+          const yearNum = currentDate.getFullYear()
+          
+          entries.push({
+            date: `${day.toString().padStart(2, '0')}.${month.toString().padStart(2, '0')}.${yearNum}`,
+            weekday: weekdayName,
+            start_time: startTime,
+            end_time: endTime,
+            hours: hours,
+            is_holiday: isHoliday && !isTakeover,
+            is_takeover: isTakeover,
+            holiday_name: isHoliday && !isTakeover ? holidayMap.get(dateStr) : undefined,
+            takeover_notes: isTakeover ? takeoverNotes : undefined
+          })
+          
+          totalHours += hours
+        }
+        
+        currentDate.setDate(currentDate.getDate() + 1)
       }
       
-      currentDate.setDate(currentDate.getDate() + 1)
+      const startDay = startDate.getDate()
+      const startMonth = startDate.getMonth() + 1
+      const startYear = startDate.getFullYear()
+      const endDay = endDate.getDate()
+      const endMonth = endDate.getMonth() + 1
+      const endYear = endDate.getFullYear()
+      
+      const periodDescription = `${startDay.toString().padStart(2, '0')}.${startMonth.toString().padStart(2, '0')}.${startYear} - ${endDay.toString().padStart(2, '0')}.${endMonth.toString().padStart(2, '0')}.${endYear}`
+      
+      // Use company hourly rate if available, otherwise use a default
+      const hourlyRate = invoice.hourly_rate || invoice.company.hourly_rate || 18.3
+      
+      const reportData = {
+        company_name: invoice.company.name,
+        period: periodDescription,
+        year: startYear,
+        entries: entries,
+        total_hours: Math.round(totalHours),
+        total_employees: 3.47,
+        hourly_rate: hourlyRate
+      }
+      
+      const stundenreportPdfBuffer = await generateStundenreportPDFBuffer(reportData)
+      console.log('✅ Stundenreport PDF generated')
+      
+      attachments.push({
+        filename: `Stundenreport_${invoice.company.name.replace(/\s+/g, '_')}.pdf`,
+        content: stundenreportPdfBuffer
+      })
     }
     
-    const startDay = startDate.getDate()
-    const startMonth = startDate.getMonth() + 1
-    const startYear = startDate.getFullYear()
-    const endDay = endDate.getDate()
-    const endMonth = endDate.getMonth() + 1
-    const endYear = endDate.getFullYear()
-    
-    const periodDescription = `${startDay.toString().padStart(2, '0')}.${startMonth.toString().padStart(2, '0')}.${startYear} - ${endDay.toString().padStart(2, '0')}.${endMonth.toString().padStart(2, '0')}.${endYear}`
-    
-    // Use company hourly rate if available, otherwise use a default
-    const hourlyRate = invoice.hourly_rate || invoice.company.hourly_rate || 18.3
-    
-    const reportData = {
-      company_name: invoice.company.name,
-      period: periodDescription,
-      year: startYear,
-      entries: entries,
-      total_hours: Math.round(totalHours),
-      total_employees: 3.47,
-      hourly_rate: hourlyRate
-    }
-    
-    const stundenreportPdfBuffer = await generateStundenreportPDFBuffer(reportData)
-    console.log('✅ Stundenreport PDF generated')
-    
-    // Send email with both attachments
+    // Send email with attachments
     await sendEmail({
-      to: invoice.company.email,
+      to: emailTo,
       subject,
       body,
-      attachments: [
-        {
-          filename: `Rechnung_${invoice.invoice_number}.pdf`,
-          content: invoicePdfBuffer
-        },
-        {
-          filename: `Stundenreport_${invoice.company.name.replace(/\s+/g, '_')}.pdf`,
-          content: stundenreportPdfBuffer
-        }
-      ]
+      attachments
     })
     
     console.log('✅ Email sent successfully')
     
     res.json({ 
       success: true, 
-      message: `E-Mail erfolgreich an ${invoice.company.email} gesendet` 
+      message: `E-Mail erfolgreich an ${emailTo} gesendet` 
     })
     
   } catch (error) {

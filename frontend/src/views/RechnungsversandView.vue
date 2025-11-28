@@ -66,15 +66,16 @@
         <div class="step" v-if="selectedInvoiceId && selectedInvoice">
           <h3 class="step-title">3️⃣ E-Mail bearbeiten</h3>
           
-          <div class="info-box">
-            <p><strong>Empfänger:</strong> {{ selectedInvoice.company.email || 'Keine E-Mail-Adresse hinterlegt' }}</p>
+          <div class="form-group">
+            <label>Empfänger E-Mail *</label>
+            <input v-model="recipientEmail" type="email" class="input" placeholder="E-Mail-Adresse eingeben" />
           </div>
 
-          <div v-if="!selectedInvoice.company.email" class="alert alert-error">
-            ⚠️ Diese Firma hat keine E-Mail-Adresse hinterlegt. Bitte fügen Sie eine E-Mail-Adresse in der Firmenverwaltung hinzu.
+          <div v-if="!recipientEmail" class="alert alert-error">
+            ⚠️ Bitte geben Sie eine E-Mail-Adresse ein.
           </div>
 
-          <div v-if="selectedInvoice.company.email">
+          <div v-if="recipientEmail">
             <div class="form-group">
               <label>Betreff *</label>
               <input v-model="emailSubject" type="text" class="input" placeholder="Betreff eingeben" />
@@ -89,16 +90,22 @@
               <h4>📎 Anhänge</h4>
               <div class="attachment-badges">
                 <span class="badge badge-primary">📄 Rechnung.pdf</span>
-                <span class="badge badge-primary">📊 Stundenreport.pdf</span>
+                <span v-if="attachHoursReport" class="badge badge-primary">📊 Stundenreport.pdf</span>
               </div>
-              <p class="help-text">Diese Dateien werden automatisch angehängt.</p>
+              <div class="form-group checkbox-group">
+                <label class="checkbox-label">
+                  <input type="checkbox" v-model="attachHoursReport" class="checkbox" />
+                  <span>Stundenreport anhängen</span>
+                </label>
+              </div>
+              <p class="help-text">Die Rechnung wird immer angehängt.</p>
             </div>
 
             <div class="actions">
               <button 
                 @click="sendEmail" 
                 class="btn btn-primary btn-large"
-                :disabled="sending || !emailSubject || !emailBody"
+                :disabled="sending || !emailSubject || !emailBody || !recipientEmail"
               >
                 <span v-if="!sending">✉️ E-Mail jetzt senden</span>
                 <span v-else>⏳ Sende E-Mail...</span>
@@ -124,6 +131,8 @@ const selectedCompanyId = ref('')
 const selectedInvoiceId = ref('')
 const emailSubject = ref('')
 const emailBody = ref('')
+const recipientEmail = ref('')
+const attachHoursReport = ref(true)
 const sending = ref(false)
 const successMessage = ref('')
 const errorMessage = ref('')
@@ -170,6 +179,8 @@ function onCompanyChange() {
   selectedInvoiceId.value = ''
   emailSubject.value = ''
   emailBody.value = ''
+  recipientEmail.value = ''
+  attachHoursReport.value = true
 }
 
 async function onInvoiceChange() {
@@ -184,6 +195,9 @@ async function onInvoiceChange() {
     
     const invoice = selectedInvoice.value
     if (!invoice) return
+    
+    // Pre-fill recipient email with company's stored email
+    recipientEmail.value = invoice.company.email || ''
     
     const periodStart = new Date(invoice.period_start)
     const periodEnd = new Date(invoice.period_end)
@@ -219,7 +233,7 @@ async function onInvoiceChange() {
 }
 
 async function sendEmail() {
-  if (!selectedInvoiceId.value || !emailSubject.value || !emailBody.value) {
+  if (!selectedInvoiceId.value || !emailSubject.value || !emailBody.value || !recipientEmail.value) {
     errorMessage.value = 'Bitte füllen Sie alle Pflichtfelder aus'
     return
   }
@@ -235,7 +249,9 @@ async function sendEmail() {
       {
         invoiceId: selectedInvoiceId.value,
         subject: emailSubject.value,
-        body: emailBody.value
+        body: emailBody.value,
+        recipientEmail: recipientEmail.value,
+        attachHoursReport: attachHoursReport.value
       },
       {
         headers: { Authorization: `Bearer ${token}` }
@@ -250,6 +266,8 @@ async function sendEmail() {
       selectedInvoiceId.value = ''
       emailSubject.value = ''
       emailBody.value = ''
+      recipientEmail.value = ''
+      attachHoursReport.value = true
       successMessage.value = ''
     }, 3000)
   } catch (error: any) {
@@ -480,6 +498,27 @@ function formatAmount(amount: number): string {
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.5);
   margin: 0;
+}
+
+.checkbox-group {
+  margin-top: 0.75rem;
+  margin-bottom: 0;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.checkbox {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #d946ef;
+  cursor: pointer;
 }
 
 .actions {
