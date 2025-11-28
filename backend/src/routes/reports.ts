@@ -115,8 +115,7 @@ router.post('/stundenreport', authenticateToken, async (req, res) => {
         // If remainder can be distributed as whole hours (remainder is a whole number), do so
         if (remainingHoursWhole === Math.floor(remainingHoursWhole) && remainingHoursWhole <= daysCount) {
           let remaining = remainingHoursWhole
-          for (let i = 0; i < dates.length; i++) {
-            const dateStr = dates[i]!
+          for (const dateStr of dates) {
             let dailyHours = baseHoursPerDayWhole
             if (remaining >= 1) {
               dailyHours += 1
@@ -127,12 +126,13 @@ router.post('/stundenreport', authenticateToken, async (req, res) => {
           }
         } else {
           // Otherwise use 0.5-step distribution
+          // Round down to nearest 0.5 by multiplying by 2, flooring, then dividing by 2
           const baseHoursPerDay = Math.floor((comp.total_hours / daysCount) * 2) / 2
           const baseTotal = baseHoursPerDay * daysCount
-          let remainingHours = comp.total_hours - baseTotal
+          // Use rounding to avoid floating-point precision issues
+          let remainingHours = Math.round((comp.total_hours - baseTotal) * 2) / 2
           
-          for (let i = 0; i < dates.length; i++) {
-            const dateStr = dates[i]!
+          for (const dateStr of dates) {
             let dailyHours = baseHoursPerDay
             if (remainingHours >= 0.5) {
               dailyHours += 0.5
