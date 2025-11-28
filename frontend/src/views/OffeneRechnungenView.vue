@@ -85,12 +85,17 @@
           </tbody>
         </table>
       </div>
+
+      <!-- Total Summary -->
+      <div v-if="invoices.length > 0" class="total-summary">
+        Offene Posten: {{ formatCurrency(totalOpenAmount) }}
+      </div>
     </div>
   </MainLayout>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import MainLayout from '../layouts/MainLayout.vue'
@@ -151,6 +156,10 @@ const getTotalPaid = (invoice: Invoice): number => {
 const getOpenAmount = (invoice: Invoice): number => {
   return invoice.total_amount - getTotalPaid(invoice)
 }
+
+const totalOpenAmount = computed((): number => {
+  return invoices.value.reduce((sum, invoice) => sum + getOpenAmount(invoice), 0)
+})
 
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString)
@@ -453,5 +462,21 @@ onMounted(() => {
 
 .loading-state p {
   color: rgba(255, 255, 255, 0.6);
+}
+
+.total-summary {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #ffffff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 </style>
