@@ -12,7 +12,7 @@ const prisma = new PrismaClient()
 // POST /api/email/send-invoice - Send invoice via email with attachments
 router.post('/send-invoice', authenticateToken, async (req, res) => {
   try {
-    const { invoiceId, subject, body, recipientEmail, attachHoursReport } = req.body
+    const { invoiceId, subject, body, recipientEmail, attachHoursReport, reportStartDate, reportEndDate } = req.body
     
     if (!invoiceId || !subject || !body) {
       return res.status(400).json({ error: 'invoiceId, subject und body sind erforderlich' })
@@ -90,8 +90,9 @@ router.post('/send-invoice', authenticateToken, async (req, res) => {
     
     if (shouldAttachHoursReport) {
       // Generate Stundenreport PDF as buffer
-      const startDate = new Date(invoice.period_start)
-      const endDate = new Date(invoice.period_end)
+      // Use custom dates if provided, otherwise fall back to invoice period
+      const startDate = reportStartDate ? new Date(reportStartDate) : new Date(invoice.period_start)
+      const endDate = reportEndDate ? new Date(reportEndDate) : new Date(invoice.period_end)
       const year = startDate.getFullYear()
     
       const holidays = invoice.company.federal_state 

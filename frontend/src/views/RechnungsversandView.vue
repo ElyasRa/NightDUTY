@@ -62,9 +62,25 @@
           </div>
         </div>
 
-        <!-- Step 3: Email Editor -->
+        <!-- Step 3: Stundenreport Time Range -->
+        <div class="step" v-if="selectedInvoiceId && selectedInvoice && attachHoursReport">
+          <h3 class="step-title">3️⃣ Stundenreport Zeitraum</h3>
+          <p class="help-text" style="margin-bottom: 1rem;">Der Zeitraum für den Stundenreport wird automatisch aus der Rechnung übernommen. Sie können ihn hier anpassen.</p>
+          <div class="date-range-row">
+            <div class="form-group">
+              <label>Zeitraum Von *</label>
+              <input v-model="reportStartDate" type="date" class="input" />
+            </div>
+            <div class="form-group">
+              <label>Zeitraum Bis *</label>
+              <input v-model="reportEndDate" type="date" class="input" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Email Editor -->
         <div class="step" v-if="selectedInvoiceId && selectedInvoice">
-          <h3 class="step-title">3️⃣ E-Mail bearbeiten</h3>
+          <h3 class="step-title">{{ attachHoursReport ? '4️⃣' : '3️⃣' }} E-Mail bearbeiten</h3>
           
           <div class="form-group">
             <label>Empfänger E-Mail *</label>
@@ -133,6 +149,8 @@ const emailSubject = ref('')
 const emailBody = ref('')
 const recipientEmail = ref('')
 const attachHoursReport = ref(true)
+const reportStartDate = ref('')
+const reportEndDate = ref('')
 const sending = ref(false)
 const successMessage = ref('')
 const errorMessage = ref('')
@@ -181,6 +199,8 @@ function onCompanyChange() {
   emailBody.value = ''
   recipientEmail.value = ''
   attachHoursReport.value = true
+  reportStartDate.value = ''
+  reportEndDate.value = ''
 }
 
 async function onInvoiceChange() {
@@ -199,8 +219,12 @@ async function onInvoiceChange() {
     // Pre-fill recipient email with company's stored email
     recipientEmail.value = invoice.company.email || ''
     
+    // Pre-fill report date range with invoice period
     const periodStart = new Date(invoice.period_start)
     const periodEnd = new Date(invoice.period_end)
+    reportStartDate.value = periodStart.toISOString().split('T')[0] ?? ''
+    reportEndDate.value = periodEnd.toISOString().split('T')[0] ?? ''
+    
     const period = `${formatDate(periodStart)} - ${formatDate(periodEnd)}`
     
     let subject = ''
@@ -251,7 +275,9 @@ async function sendEmail() {
         subject: emailSubject.value,
         body: emailBody.value,
         recipientEmail: recipientEmail.value,
-        attachHoursReport: attachHoursReport.value
+        attachHoursReport: attachHoursReport.value,
+        reportStartDate: attachHoursReport.value ? reportStartDate.value : undefined,
+        reportEndDate: attachHoursReport.value ? reportEndDate.value : undefined
       },
       {
         headers: { Authorization: `Bearer ${token}` }
@@ -268,6 +294,8 @@ async function sendEmail() {
       emailBody.value = ''
       recipientEmail.value = ''
       attachHoursReport.value = true
+      reportStartDate.value = ''
+      reportEndDate.value = ''
       successMessage.value = ''
     }, 3000)
   } catch (error: any) {
@@ -398,6 +426,15 @@ function formatAmount(amount: number): string {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   margin-bottom: 1rem;
+}
+
+.date-range-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.date-range-row .form-group {
+  flex: 1;
 }
 
 .form-group {
