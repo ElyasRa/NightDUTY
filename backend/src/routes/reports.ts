@@ -98,15 +98,49 @@ router.post('/stundenreport', authenticateToken, async (req, res) => {
       
       // Ensure we have at least 1 day and valid hours
       if (daysCount >= 1 && comp.total_hours > 0) {
-        const dailyAdd = comp.total_hours / daysCount
-        
-        // Add daily_add to each day in the range
+        // NEW LOGIC: Distribute hours in "clean" increments (prefer whole hours, then 0.5 steps)
+        // Build list of dates in the compensation period
+        const dates: string[] = []
         const compDate = new Date(compStart)
         while (compDate <= compEnd) {
-          const dateStr = compDate.toISOString().split('T')[0]
-          const existing = compensationHoursMap.get(dateStr) || 0
-          compensationHoursMap.set(dateStr, existing + dailyAdd)
+          dates.push(compDate.toISOString().split('T')[0])
           compDate.setDate(compDate.getDate() + 1)
+        }
+        
+        // First try with whole hours (floor to nearest 1.0)
+        const baseHoursPerDayWhole = Math.floor(comp.total_hours / daysCount)
+        const baseTotalWhole = baseHoursPerDayWhole * daysCount
+        const remainingHoursWhole = comp.total_hours - baseTotalWhole
+        
+        // If remainder can be distributed as whole hours (remainder is a whole number), do so
+        if (remainingHoursWhole === Math.floor(remainingHoursWhole) && remainingHoursWhole <= daysCount) {
+          let remaining = remainingHoursWhole
+          for (let i = 0; i < dates.length; i++) {
+            const dateStr = dates[i]!
+            let dailyHours = baseHoursPerDayWhole
+            if (remaining >= 1) {
+              dailyHours += 1
+              remaining -= 1
+            }
+            const existing = compensationHoursMap.get(dateStr) || 0
+            compensationHoursMap.set(dateStr, existing + dailyHours)
+          }
+        } else {
+          // Otherwise use 0.5-step distribution
+          const baseHoursPerDay = Math.floor((comp.total_hours / daysCount) * 2) / 2
+          const baseTotal = baseHoursPerDay * daysCount
+          let remainingHours = comp.total_hours - baseTotal
+          
+          for (let i = 0; i < dates.length; i++) {
+            const dateStr = dates[i]!
+            let dailyHours = baseHoursPerDay
+            if (remainingHours >= 0.5) {
+              dailyHours += 0.5
+              remainingHours -= 0.5
+            }
+            const existing = compensationHoursMap.get(dateStr) || 0
+            compensationHoursMap.set(dateStr, existing + dailyHours)
+          }
         }
       }
     }
