@@ -80,6 +80,15 @@ router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params
     
+    // Check if compensation exists before deletion
+    const existing = await prisma.hoursCompensation.findUnique({
+      where: { id: parseInt(id) }
+    })
+    
+    if (!existing) {
+      return res.status(404).json({ error: 'Stundenausgleich nicht gefunden' })
+    }
+    
     await prisma.hoursCompensation.delete({
       where: { id: parseInt(id) }
     })

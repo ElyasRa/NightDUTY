@@ -91,10 +91,13 @@ router.post('/stundenreport', authenticateToken, async (req, res) => {
       const compStart = new Date(comp.start_date)
       const compEnd = new Date(comp.end_date)
       
-      // Calculate the number of days in this compensation period
-      const daysCount = Math.floor((compEnd.getTime() - compStart.getTime()) / (1000 * 60 * 60 * 24)) + 1
+      // Calculate the number of days in this compensation period using UTC to avoid DST issues
+      const startUtc = Date.UTC(compStart.getFullYear(), compStart.getMonth(), compStart.getDate())
+      const endUtc = Date.UTC(compEnd.getFullYear(), compEnd.getMonth(), compEnd.getDate())
+      const daysCount = Math.floor((endUtc - startUtc) / (1000 * 60 * 60 * 24)) + 1
       
-      if (daysCount > 0) {
+      // Ensure we have at least 1 day and valid hours
+      if (daysCount >= 1 && comp.total_hours > 0) {
         const dailyAdd = comp.total_hours / daysCount
         
         // Add daily_add to each day in the range
