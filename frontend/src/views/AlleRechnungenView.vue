@@ -400,7 +400,7 @@ const deleteInvoice = async () => {
     })
     
     // Remove the invoice from the local list
-    invoices.value = invoices.value.filter(inv => inv.id !== deleteConfirmInvoice.value!.id)
+    invoices.value = invoices.value.filter(inv => inv.id !== deleteConfirmInvoice.value?.id)
     deleteConfirmInvoice.value = null
   } catch (err: any) {
     console.error('Error deleting invoice:', err)
