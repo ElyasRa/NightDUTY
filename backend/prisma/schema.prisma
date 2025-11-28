@@ -64,6 +64,7 @@ model Company {
   
   takeovers       EarlyTakeover[]
   invoices        Invoice[]
+  compensations   HoursCompensation[]
 }
 
 model EarlyTakeover {
@@ -179,4 +180,21 @@ model SystemSettings {
   
   created_at              DateTime @default(now())
   updated_at              DateTime @updatedAt
+}
+
+model HoursCompensation {
+  id          Int      @id @default(autoincrement())
+  company_id  Int
+  company     Company  @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  
+  start_date  DateTime
+  end_date    DateTime
+  total_hours Float
+  
+  created_by  String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  
+  @@index([company_id])
+  @@index([start_date, end_date])
 }

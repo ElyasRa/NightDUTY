@@ -248,6 +248,17 @@
             <span class="nav-text">Frühzeitige Übernahme</span>
           </router-link>
 
+          <!-- Stundenausgleich -->
+          <router-link to="/stundenausgleich" class="nav-item">
+            <div class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <span class="nav-text">Stundenausgleich</span>
+          </router-link>
+
           <!-- Einstellungen -->
           <router-link to="/einstellungen" class="nav-item">
             <div class="nav-icon">

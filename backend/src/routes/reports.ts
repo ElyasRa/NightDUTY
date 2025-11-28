@@ -70,6 +70,44 @@ router.post('/stundenreport', authenticateToken, async (req, res) => {
       console.log(`   - ${t.start_date} bis ${t.end_date}: ${t.start_time}-${t.end_time}`)
     })
     
+    // Fetch HoursCompensation entries for the report period and company
+    const compensations = await prisma.hoursCompensation.findMany({
+      where: {
+        company_id: parseInt(company_id),
+        start_date: { lte: endDate },
+        end_date: { gte: startDate }
+      }
+    })
+    
+    console.log(`✅ Gefundene Stundenausgleiche für Report: ${compensations.length}`)
+    compensations.forEach(c => {
+      console.log(`   - ${c.start_date} bis ${c.end_date}: ${c.total_hours} Stunden`)
+    })
+    
+    // Build a map of date -> compensation hours to add (sum of all applicable compensations)
+    const compensationHoursMap = new Map<string, number>()
+    
+    for (const comp of compensations) {
+      const compStart = new Date(comp.start_date)
+      const compEnd = new Date(comp.end_date)
+      
+      // Calculate the number of days in this compensation period
+      const daysCount = Math.floor((compEnd.getTime() - compStart.getTime()) / (1000 * 60 * 60 * 24)) + 1
+      
+      if (daysCount > 0) {
+        const dailyAdd = comp.total_hours / daysCount
+        
+        // Add daily_add to each day in the range
+        const compDate = new Date(compStart)
+        while (compDate <= compEnd) {
+          const dateStr = compDate.toISOString().split('T')[0]
+          const existing = compensationHoursMap.get(dateStr) || 0
+          compensationHoursMap.set(dateStr, existing + dailyAdd)
+          compDate.setDate(compDate.getDate() + 1)
+        }
+      }
+    }
+    
     // Alle Tage im Zeitraum generieren
     const entries = []
     let totalHours = 0
@@ -151,7 +189,14 @@ router.post('/stundenreport', authenticateToken, async (req, res) => {
           workMinutes = endMinutes - startMinutes
         }
         
-        const hours = workMinutes / 60
+        let hours = workMinutes / 60
+        
+        // Add compensation hours if applicable for this day
+        const compensationHours = compensationHoursMap.get(dateStr) || 0
+        if (compensationHours > 0) {
+          console.log(`   ✅ Stundenausgleich für ${dateStr}: +${compensationHours.toFixed(2)} Stunden`)
+          hours += compensationHours
+        }
         
         const day = currentDate.getDate()
         const month = currentDate.getMonth() + 1
