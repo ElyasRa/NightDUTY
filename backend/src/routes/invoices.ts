@@ -436,9 +436,16 @@ router.put('/:id', authenticateToken, async (req, res) => {
 router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params
+    const invoiceId = parseInt(id)
     
+    // First, delete all associated Payment records to ensure referential integrity
+    await prisma.payment.deleteMany({
+      where: { invoice_id: invoiceId }
+    })
+    
+    // Then delete the invoice itself
     await prisma.invoice.delete({
-      where: { id: parseInt(id) }
+      where: { id: invoiceId }
     })
     
     res.json({ message: 'Rechnung gelöscht' })

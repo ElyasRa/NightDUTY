@@ -100,6 +100,13 @@
                   >
                     👁️
                   </button>
+                  <button 
+                    @click="confirmDelete(invoice)" 
+                    class="btn-icon btn-icon-danger"
+                    title="Rechnung löschen"
+                  >
+                    🗑️
+                  </button>
                 </div>
               </td>
             </tr>
@@ -203,6 +210,27 @@
           </div>
         </div>
       </div>
+
+      <!-- Delete Confirmation Modal -->
+      <div v-if="deleteConfirmInvoice" class="modal-overlay" @click="cancelDelete">
+        <div class="modal-content modal-delete-confirm" @click.stop>
+          <div class="modal-header">
+            <h2>Rechnung löschen</h2>
+            <button @click="cancelDelete" class="btn-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="delete-warning">
+              Möchten Sie die Rechnung <strong>{{ deleteConfirmInvoice.invoice_number }}</strong> wirklich löschen? Dies kann nicht rückgängig gemacht werden.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button @click="deleteInvoice" class="btn-danger" :disabled="deleteLoading">
+              {{ deleteLoading ? 'Löschen...' : '🗑️ Löschen' }}
+            </button>
+            <button @click="cancelDelete" class="btn-secondary" :disabled="deleteLoading">Abbrechen</button>
+          </div>
+        </div>
+      </div>
     </div>
   </MainLayout>
 </template>
@@ -248,6 +276,8 @@ const error = ref('')
 const searchQuery = ref('')
 const statusFilter = ref('all')
 const selectedInvoice = ref<Invoice | null>(null)
+const deleteConfirmInvoice = ref<Invoice | null>(null)
+const deleteLoading = ref(false)
 
 const API_URL = 'http://188.245.198.220:3000'
 
@@ -349,6 +379,35 @@ const viewDetails = (invoice: Invoice) => {
 
 const closeDetails = () => {
   selectedInvoice.value = null
+}
+
+const confirmDelete = (invoice: Invoice) => {
+  deleteConfirmInvoice.value = invoice
+}
+
+const cancelDelete = () => {
+  deleteConfirmInvoice.value = null
+}
+
+const deleteInvoice = async () => {
+  if (!deleteConfirmInvoice.value) return
+  
+  deleteLoading.value = true
+  try {
+    const token = localStorage.getItem('token')
+    await axios.delete(`${API_URL}/api/invoices/${deleteConfirmInvoice.value.id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    
+    // Remove the invoice from the local list
+    invoices.value = invoices.value.filter(inv => inv.id !== deleteConfirmInvoice.value?.id)
+    deleteConfirmInvoice.value = null
+  } catch (err: any) {
+    console.error('Error deleting invoice:', err)
+    error.value = err.response?.data?.error || 'Fehler beim Löschen der Rechnung'
+  } finally {
+    deleteLoading.value = false
+  }
 }
 
 onMounted(() => {
@@ -778,5 +837,52 @@ onMounted(() => {
   justify-content: flex-end;
   padding: 1.5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-icon-danger {
+  color: #ef4444;
+}
+
+.btn-icon-danger:hover {
+  color: #f87171;
+  filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.5));
+}
+
+.modal-delete-confirm {
+  max-width: 500px;
+}
+
+.delete-warning {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.delete-warning strong {
+  color: #ffffff;
+}
+
+.btn-danger {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(239, 68, 68, 0.4);
+}
+
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 </style>
