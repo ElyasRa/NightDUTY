@@ -86,7 +86,7 @@ router.post('/send-invoice', authenticateToken, async (req, res) => {
     ]
     
     // Only generate and attach Stundenreport if attachHoursReport is true (default to true for backward compatibility)
-    const shouldAttachHoursReport = attachHoursReport !== false
+    const shouldAttachHoursReport = attachHoursReport === undefined ? true : Boolean(attachHoursReport)
     
     if (shouldAttachHoursReport) {
       // Generate Stundenreport PDF as buffer
