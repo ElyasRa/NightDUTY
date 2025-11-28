@@ -13,6 +13,7 @@ import ZahlungBuchenView from '../views/ZahlungBuchenView.vue'
 import RechnungsversandView from '../views/RechnungsversandView.vue'
 import EinstellungenView from '../views/EinstellungenView.vue'
 import BenutzerverwaltungView from '../views/BenutzerverwaltungView.vue'
+import StundenausgleichView from '../views/StundenausgleichView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -102,6 +103,12 @@ const router = createRouter({
       path: '/benutzerverwaltung',
       name: 'Benutzerverwaltung',
       component: BenutzerverwaltungView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/stundenausgleich',
+      name: 'Stundenausgleich',
+      component: StundenausgleichView,
       meta: { requiresAuth: true }
     }
   ]
