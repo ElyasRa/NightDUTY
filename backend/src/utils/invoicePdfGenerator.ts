@@ -24,6 +24,8 @@ interface InvoiceData {
   billing_type: string
   total_hours?: number
   hourly_rate?: number
+  takeover_hours?: number
+  takeover_rate?: number
   count_pkw?: number
   count_lkw?: number
   count_oilspill?: number
@@ -205,6 +207,7 @@ export function generateInvoicePDF(data: InvoiceData, res: Response) {
       `${(data.hourly_rate || 0).toFixed(2)} €`,
       `${((data.total_hours || 0) * (data.hourly_rate || 0)).toFixed(2)} €`
     )
+    artNr += 10000
   } else if (data.billing_type === 'per_job') {
     // Service-Pauschale ZUERST
     if (data.service_fee && data.service_fee > 0) {
@@ -222,6 +225,7 @@ export function generateInvoicePDF(data: InvoiceData, res: Response) {
     }
     if (data.count_oilspill && data.count_oilspill > 0) {
       addRow(artNr, 'Ölspur-Beseitigung', data.count_oilspill.toString(), `${data.price_oilspill?.toFixed(2)} €`, `${(data.count_oilspill * data.price_oilspill!).toFixed(2)} €`)
+      artNr += 10000
     }
   } else if (data.billing_type === 'flat_rate') {
     addRow(
@@ -230,6 +234,18 @@ export function generateInvoicePDF(data: InvoiceData, res: Response) {
       '1',
       `${(data.monthly_rate || 0).toFixed(2)} €`,
       `${(data.monthly_rate || 0).toFixed(2)} €`
+    )
+    artNr += 10000
+  }
+  
+  // Add "Frühzeitige Übernahme" line item if takeover_hours and takeover_rate exist and are > 0
+  if (data.takeover_hours && data.takeover_hours > 0 && data.takeover_rate && data.takeover_rate > 0) {
+    addRow(
+      artNr,
+      'Frühzeitige Übernahme',
+      data.takeover_hours.toFixed(0),
+      `${data.takeover_rate.toFixed(2)} €`,
+      `${(data.takeover_hours * data.takeover_rate).toFixed(2)} €`
     )
   }
   
@@ -502,6 +518,7 @@ export function generateInvoicePDFBuffer(data: InvoiceData): Promise<Buffer> {
         `${(data.hourly_rate || 0).toFixed(2)} €`,
         `${((data.total_hours || 0) * (data.hourly_rate || 0)).toFixed(2)} €`
       )
+      artNr += 10000
     } else if (data.billing_type === 'per_job') {
       // Service-Pauschale ZUERST
       if (data.service_fee && data.service_fee > 0) {
@@ -519,6 +536,7 @@ export function generateInvoicePDFBuffer(data: InvoiceData): Promise<Buffer> {
       }
       if (data.count_oilspill && data.count_oilspill > 0) {
         addRow(artNr, 'Ölspur-Beseitigung', data.count_oilspill.toString(), `${data.price_oilspill?.toFixed(2)} €`, `${(data.count_oilspill * data.price_oilspill!).toFixed(2)} €`)
+        artNr += 10000
       }
     } else if (data.billing_type === 'flat_rate') {
       addRow(
@@ -527,6 +545,18 @@ export function generateInvoicePDFBuffer(data: InvoiceData): Promise<Buffer> {
         '1',
         `${(data.monthly_rate || 0).toFixed(2)} €`,
         `${(data.monthly_rate || 0).toFixed(2)} €`
+      )
+      artNr += 10000
+    }
+    
+    // Add "Frühzeitige Übernahme" line item if takeover_hours and takeover_rate exist and are > 0
+    if (data.takeover_hours && data.takeover_hours > 0 && data.takeover_rate && data.takeover_rate > 0) {
+      addRow(
+        artNr,
+        'Frühzeitige Übernahme',
+        data.takeover_hours.toFixed(0),
+        `${data.takeover_rate.toFixed(2)} €`,
+        `${(data.takeover_hours * data.takeover_rate).toFixed(2)} €`
       )
     }
     

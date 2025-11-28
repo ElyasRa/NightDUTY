@@ -297,6 +297,8 @@ router.get('/:id/pdf', async (req, res) => {
       billing_type: invoice.billing_type,
       total_hours: invoice.total_hours || undefined,
       hourly_rate: invoice.hourly_rate || undefined,
+      takeover_hours: invoice.takeover_hours || undefined,
+      takeover_rate: invoice.takeover_rate || undefined,
       count_pkw: invoice.count_pkw || undefined,
       count_lkw: invoice.count_lkw || undefined,
       count_oilspill: invoice.count_oilspill || undefined,
@@ -329,6 +331,15 @@ router.post('/', authenticateToken, async (req, res) => {
     
     const invoiceNumber = await generateInvoiceNumber()
     
+    // Look up company for early_takeover_price if takeover_hours are provided
+    let takeoverRate: number | null = null
+    if (data.takeover_hours && data.takeover_hours > 0) {
+      const company = await prisma.company.findUnique({
+        where: { id: data.company_id }
+      })
+      takeoverRate = company?.early_takeover_price ?? null
+    }
+    
     let subtotal = 0
 
     if (data.billing_type === 'hourly') {
@@ -343,6 +354,11 @@ router.post('/', authenticateToken, async (req, res) => {
     } else if (data.billing_type === 'flat_rate') {
       // Pauschale
       subtotal = data.monthly_rate || 0
+    }
+    
+    // Add takeover hours to subtotal if applicable
+    if (data.takeover_hours && data.takeover_hours > 0 && takeoverRate) {
+      subtotal += data.takeover_hours * takeoverRate
     }
 
     const taxRate = data.tax_rate || 19
@@ -360,6 +376,8 @@ router.post('/', authenticateToken, async (req, res) => {
         billing_type: data.billing_type,
         total_hours: data.total_hours || null,
         hourly_rate: data.hourly_rate || null,
+        takeover_hours: data.takeover_hours || null,
+        takeover_rate: takeoverRate,
         count_pkw: data.count_pkw || null,
         count_lkw: data.count_lkw || null,
         count_oilspill: data.count_oilspill || null,
